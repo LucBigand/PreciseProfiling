@@ -53,6 +53,11 @@ CHMethodScope >> scopeDefining: aString [
 	^ self parentScope scopeDefining: aString
 ]
 
+{ #category : #accessing }
+CHMethodScope >> variables [
+	^ variables copy
+]
+
 { #category : #setting }
 CHMethodScope >> write: aString withValue: aValue [
 	variables at: aString put: aValue.

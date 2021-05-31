@@ -57,7 +57,18 @@ CHInterpreter >> execute: anAst withReceiver: anObject [
 { #category : #visiting }
 CHInterpreter >> execute: anAst withReceiver: anObject andArguments: aCollection [
 	| result thisFrame |
+	
+	"Find a better solution later
+	variables := (stack isEmpty)
+		ifTrue: [ Dictionary new ]
+		ifFalse: [ self topFrame variables ]."
+	
 	thisFrame := self pushNewFrame.
+	
+	"Find a better solution later
+	variables keysAndValuesDo: [ :key :value |
+		self tempAt: key put: value ]."
+	
 	self tempAt: #___method put: anAst.
 	self tempAt: #self put: anObject.
 	self topFrame parentScope: (CHInstanceScope new
@@ -68,7 +79,6 @@ CHInterpreter >> execute: anAst withReceiver: anObject andArguments: aCollection
 	anAst arguments
 		with: aCollection
 		do: [ :arg :value | self tempAt: arg name put: value].
-	"result := self visitNode: anAst."
 	result := [ self visitNode: anAst ]
 		on: CHReturn
 		do: [ :return |
@@ -124,6 +134,7 @@ CHInterpreter >> initializePrimitiveTable [
 	primitives at: 8	put: #primitiveSmallIntegerNotEqualsThan.
 	primitives at: 9	put: #primitiveSmallIntegerMultiply.
 	primitives at: 10	put: #primitiveSmallIntegerDivide.
+	primitives at: 12	put: #primitiveSmallIntegerEuclidianDivide.
 	primitives at: 60	put: #primitiveAt.
 	primitives at: 61	put: #primitiveAtPut.
 	primitives at: 62	put: #primitiveSize.
@@ -139,7 +150,7 @@ CHInterpreter >> initializePrimitiveTable [
 { #category : #accessing }
 CHInterpreter >> lookup: aSelector fromClass: aClass [
 	(aClass includesSelector: aSelector)
-		ifTrue: [ ^ (aClass compiledMethodAt: aSelector) ast ].
+		ifTrue: [ ^ aClass compiledMethodAt: aSelector].
 	aClass superclass
 		ifNil: [ ^ nil ]
 		ifNotNil: [ ^ self lookup: aSelector fromClass: aClass superclass ]
@@ -265,6 +276,16 @@ CHInterpreter >> primitiveSmallIntegerEqualsThan [
 ]
 
 { #category : #primitives }
+CHInterpreter >> primitiveSmallIntegerEuclidianDivide [
+	| argument |
+	argument := self argumentAt: 1.
+	(argument class = SmallInteger and: (argument ~= 0))
+		ifFalse: [ CHPrimitiveFail signal ].
+	
+	^ (self receiver) // argument
+]
+
+{ #category : #primitives }
 CHInterpreter >> primitiveSmallIntegerGreaterOrEqualsThan [
 	self assertSmallIntegerReceiverAndArgument.
 	^ (self receiver) >= (self argumentAt: 1).
@@ -359,7 +380,9 @@ CHInterpreter >> topFrame [
 
 { #category : #visiting }
 CHInterpreter >> visitArgumentVariableNode: aNode [
-	^ self topFrame read: aNode name.
+	(self topFrame includesKey: aNode name)
+		ifTrue: [ ^ self topFrame read: aNode name. ]
+		ifFalse: [  ].
 ]
 
 { #category : #visiting }
@@ -422,7 +445,7 @@ CHInterpreter >> visitMessageNode: aNode [
 		               ifTrue: [ self currentMethod methodClass superclass ]
 		               ifFalse: [ newReceiver class ].
 	method := self lookup: aNode selector fromClass: lookupClass.
-	^ self execute: method withReceiver: newReceiver andArguments: args
+	^ self execute: (method ast) withReceiver: newReceiver andArguments: args
 ]
 
 { #category : #visiting }

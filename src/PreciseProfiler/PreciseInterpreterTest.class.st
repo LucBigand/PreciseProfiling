@@ -1,0 +1,43 @@
+Class {
+	#name : #PreciseInterpreterTest,
+	#superclass : #TestCase,
+	#instVars : [
+		'interpreter'
+	],
+	#category : #PreciseProfiler
+}
+
+{ #category : #setup }
+PreciseInterpreterTest >> setUp [
+	super setUp.
+	interpreter := PreciseInterpreter new.
+	
+]
+
+{ #category : #test }
+PreciseInterpreterTest >> testInterpreteExponentiation [
+	self
+		assert: (interpreter runOn: 5 method: #** andArguments: #(3))
+		equals: 125.
+]
+
+{ #category : #test }
+PreciseInterpreterTest >> testInterpreteFactorial1 [
+	self
+		assert: (interpreter runOn: 1 method: #factorial)
+		equals: 1.
+]
+
+{ #category : #test }
+PreciseInterpreterTest >> testInterpreteFactorial5 [
+	self
+		assert: (interpreter runOn: 5 method: #factorial)
+		equals: 120.
+]
+
+{ #category : #test }
+PreciseInterpreterTest >> testInterpreteJavadoc [
+	self
+		assert: (interpreter runOn: Javadoc method: #runOnPackage: andArguments: { SmallInteger package })
+		equals: 120.
+]
