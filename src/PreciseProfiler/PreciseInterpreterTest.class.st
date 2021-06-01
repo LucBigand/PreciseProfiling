@@ -15,6 +15,20 @@ PreciseInterpreterTest >> setUp [
 ]
 
 { #category : #test }
+PreciseInterpreterTest >> testInterpreteCHInterpretableLastExpression [
+	self
+		assert: (interpreter runOn: (CHInterpretable new) method: #lastExpression andArguments: #() )
+		equals: 43.
+	self
+		assert: (interpreter methodList) 
+		= (Dictionary newFrom: { 
+			CHInterpretable>>#lastExpression -> 1 .
+			True>>#ifTrue: -> 1 .
+			FullBlockClosure>>#value -> 1 .
+			SmallInteger>>#+ -> 1})
+]
+
+{ #category : #test }
 PreciseInterpreterTest >> testInterpreteExponentiation [
 	self
 		assert: (interpreter runOn: 5 method: #** andArguments: #(3))
@@ -40,4 +54,15 @@ PreciseInterpreterTest >> testInterpreteJavadoc [
 	self
 		assert: (interpreter runOn: Javadoc method: #runOnPackage: andArguments: { SmallInteger package })
 		equals: 120.
+]
+
+{ #category : #test }
+PreciseInterpreterTest >> testInterpreteSmallIntegerAddition [
+	self
+		assert: (interpreter runOn: 3 method: #+ andArguments: #(5) )
+		equals: 8.
+	self
+		assert: (interpreter methodList) 
+		= (Dictionary newFrom: { 
+			SmallInteger>>#+ -> 1})
 ]

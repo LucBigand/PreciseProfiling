@@ -25,9 +25,13 @@ PreciseInterpreter >> methodList [
 
 { #category : #visiting }
 PreciseInterpreter >> registerMethodCall: aCompiledMethod [
-	(methodList includesKey: aCompiledMethod)
-		ifTrue: [ methodList at: aCompiledMethod update: [ :count | count + 1 ] ]
-		ifFalse: [ methodList at: aCompiledMethod put: 1 ].
+	| method |
+	method := (aCompiledMethod classBinding value == CHBlock)
+		ifTrue: [ FullBlockClosure >> (aCompiledMethod selector) ] 
+		ifFalse: [ aCompiledMethod ].
+	(methodList includesKey: method)
+		ifTrue: [ methodList at: method update: [ :count | count + 1 ] ]
+		ifFalse: [ methodList at: method put: 1 ].
 ]
 
 { #category : #running }
@@ -43,18 +47,17 @@ PreciseInterpreter >> runOn: aReceiver method: aSelector andArguments: args [
 	[ (lookupClass isNotNil) and: (self class: lookupClass hasMethod: aSelector) not ] whileTrue: 
 		[ lookupClass := lookupClass superclass ].
 	ast := (lookupClass >> aSelector) parseTree.
+	self registerMethodCall: (lookupClass >> aSelector).
 	^ self execute: ast withReceiver: aReceiver andArguments: args.
 ]
 
 { #category : #visiting }
 PreciseInterpreter >> visitMessageNode: aNode [
-	| newReceiver method args lookupClass |
-	newReceiver := self visitNode: aNode receiver.
-	args := aNode arguments collect: [ :each | self visitNode: each ].
-	lookupClass := aNode receiver isSuperVariable
-		               ifTrue: [ self currentMethod methodClass superclass ]
-		               ifFalse: [ newReceiver class ].
-	method := self lookup: aNode selector fromClass: lookupClass.
-	self registerMethodCall: method.
-	^ self execute: (method ast) withReceiver: newReceiver andArguments: args.
+	| dict |
+	dict := self auxVisitMessageNode: aNode.
+	self registerMethodCall: (dict at: 'method').
+	^ self 
+		execute: ((dict at: 'method') ast)
+		withReceiver: (dict at: 'receiver')
+		andArguments: (dict at: 'args').
 ]

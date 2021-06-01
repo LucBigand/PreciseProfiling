@@ -4,7 +4,8 @@ Class {
 	#instVars : [
 		'receiver',
 		'variables',
-		'parentScope'
+		'parentScope',
+		'previousScope'
 	],
 	#category : #'Champollion-Tests'
 }
@@ -30,9 +31,16 @@ CHMethodScope >> parentScope: anObject [
 	parentScope := anObject.
 ]
 
+{ #category : #setting }
+CHMethodScope >> previousScope: aMethodScope [
+	previousScope := aMethodScope
+]
+
 { #category : #accessing }
 CHMethodScope >> read: aString [
-	^ variables at: aString
+	(self includesKey: aString)
+		ifTrue: [ ^ variables at: aString ] 
+		ifFalse: [ ^ previousScope read: aString ] .
 ]
 
 { #category : #accessing }

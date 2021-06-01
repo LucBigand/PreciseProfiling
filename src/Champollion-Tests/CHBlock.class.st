@@ -9,6 +9,11 @@ Class {
 }
 
 { #category : #accessing }
+CHBlock class >> chCompiledMethodAt: aSelector [
+	^ FullBlockClosure >> aSelector 
+]
+
+{ #category : #accessing }
 CHBlock >> code [
 	^ code
 ]

@@ -29,6 +29,19 @@ CHInterpreter >> assertSmallIntegerReceiverAndArgument [
 		ifFalse: [ CHPrimitiveFail signal ].
 ]
 
+{ #category : #visiting }
+CHInterpreter >> auxVisitMessageNode: aNode [
+
+	| newReceiver method args lookupClass |
+	newReceiver := self visitNode: aNode receiver.
+	args := aNode arguments collect: [ :each | self visitNode: each ].
+	lookupClass := aNode receiver isSuperVariable
+		               ifTrue: [ self currentMethod methodClass superclass ]
+		               ifFalse: [ newReceiver class ].
+	method := self lookup: aNode selector fromClass: lookupClass.
+	^ Dictionary newFrom: { 'method' -> method . 'receiver' -> newReceiver . 'args' -> args }
+]
+
 { #category : #accessing }
 CHInterpreter >> currentMethod [
 	^ self tempAt: #___method.
@@ -57,18 +70,7 @@ CHInterpreter >> execute: anAst withReceiver: anObject [
 { #category : #visiting }
 CHInterpreter >> execute: anAst withReceiver: anObject andArguments: aCollection [
 	| result thisFrame |
-	
-	"Find a better solution later
-	variables := (stack isEmpty)
-		ifTrue: [ Dictionary new ]
-		ifFalse: [ self topFrame variables ]."
-	
 	thisFrame := self pushNewFrame.
-	
-	"Find a better solution later
-	variables keysAndValuesDo: [ :key :value |
-		self tempAt: key put: value ]."
-	
 	self tempAt: #___method put: anAst.
 	self tempAt: #self put: anObject.
 	self topFrame parentScope: (CHInstanceScope new
@@ -135,6 +137,8 @@ CHInterpreter >> initializePrimitiveTable [
 	primitives at: 9	put: #primitiveSmallIntegerMultiply.
 	primitives at: 10	put: #primitiveSmallIntegerDivide.
 	primitives at: 12	put: #primitiveSmallIntegerEuclidianDivide.
+	primitives at: 14	put: #primitiveSmallIntegerBitAnd.
+	primitives at: 17	put: #primitiveSmallIntegerBitShift.
 	primitives at: 60	put: #primitiveAt.
 	primitives at: 61	put: #primitiveAtPut.
 	primitives at: 62	put: #primitiveSize.
@@ -143,17 +147,22 @@ CHInterpreter >> initializePrimitiveTable [
 	primitives at: 64	put: #primitiveBasicNew.
 	primitives at: 64	put: #primitiveBasicNewVariable.
 	primitives at: 110	put: #primitiveIdentical.
-	primitives at: 111	put: #primitiveNotIdentical.
+	primitives at: 111	put: #primitiveClass.
 	primitives at: 201	put: #primitiveBlockValue.
+	primitives at: 207	put: #primitiveBlockValue.
 ]
 
 { #category : #accessing }
 CHInterpreter >> lookup: aSelector fromClass: aClass [
+	| class |
+	class := (aClass == CHBlock)
+		ifTrue: [ FullBlockClosure ]
+		ifFalse: [ aClass ].
 	(aClass includesSelector: aSelector)
-		ifTrue: [ ^ aClass compiledMethodAt: aSelector].
+		ifTrue: [ ^ class compiledMethodAt: aSelector].
 	aClass superclass
 		ifNil: [ ^ nil ]
-		ifNotNil: [ ^ self lookup: aSelector fromClass: aClass superclass ]
+		ifNotNil: [ ^ self lookup: aSelector fromClass: class superclass ]
 ]
 
 { #category : #accessing }
@@ -233,17 +242,15 @@ CHInterpreter >> primitiveBlockValue [
 ]
 
 { #category : #primitives }
+CHInterpreter >> primitiveClass [
+	^ self receiver class
+]
+
+{ #category : #primitives }
 CHInterpreter >> primitiveIdentical [ 
 	self numberOfArguments < 1
 		ifTrue: [ CHPrimitiveFail signal ].
 	^ (self receiver) == (self argumentAt: 1)
-]
-
-{ #category : #primitives }
-CHInterpreter >> primitiveNotIdentical [ 
-	self numberOfArguments < 1
-		ifTrue: [ CHPrimitiveFail signal ].
-	^ (self receiver) ~~ (self argumentAt: 1)
 ]
 
 { #category : #primitives }
@@ -257,6 +264,18 @@ CHInterpreter >> primitiveSize [
 CHInterpreter >> primitiveSmallIntegerAdd [
 	self assertSmallIntegerReceiverAndArgument.
 	^ (self receiver) + (self argumentAt: 1).
+]
+
+{ #category : #primitives }
+CHInterpreter >> primitiveSmallIntegerBitAnd [
+	self assertSmallIntegerReceiverAndArgument.
+	^ (self receiver) bitAnd: (self argumentAt: 1).
+]
+
+{ #category : #primitives }
+CHInterpreter >> primitiveSmallIntegerBitShift [
+	self assertSmallIntegerReceiverAndArgument.
+	^ (self receiver) bitShift: (self argumentAt: 1).
 ]
 
 { #category : #primitives }
@@ -344,6 +363,7 @@ CHInterpreter >> primitiveStringAt [
 CHInterpreter >> pushNewFrame [
 	| newTop |
 	newTop := CHMethodScope new.
+	stack ifNotEmpty: [ newTop previousScope: self topFrame ].
 	stack push: newTop.
 	^ newTop.
 ]
@@ -380,9 +400,7 @@ CHInterpreter >> topFrame [
 
 { #category : #visiting }
 CHInterpreter >> visitArgumentVariableNode: aNode [
-	(self topFrame includesKey: aNode name)
-		ifTrue: [ ^ self topFrame read: aNode name. ]
-		ifFalse: [  ].
+	^ self topFrame read: aNode name. 
 ]
 
 { #category : #visiting }
@@ -437,15 +455,12 @@ CHInterpreter >> visitLiteralValueNode: aNode [
 
 { #category : #visiting }
 CHInterpreter >> visitMessageNode: aNode [
-
-	| newReceiver method args lookupClass |
-	newReceiver := self visitNode: aNode receiver.
-	args := aNode arguments collect: [ :each | self visitNode: each ].
-	lookupClass := aNode receiver isSuperVariable
-		               ifTrue: [ self currentMethod methodClass superclass ]
-		               ifFalse: [ newReceiver class ].
-	method := self lookup: aNode selector fromClass: lookupClass.
-	^ self execute: (method ast) withReceiver: newReceiver andArguments: args
+	| dict |
+	dict := self auxVisitMessageNode: aNode.
+	^ self 
+		execute: ((dict at: 'method') ast)
+		withReceiver: (dict at: 'receiver')
+		andArguments: (dict at: 'args').
 ]
 
 { #category : #visiting }
@@ -471,7 +486,7 @@ CHInterpreter >> visitReturnNode: aNode [
 
 { #category : #visiting }
 CHInterpreter >> visitSelfNode: aNode [
-	^ self receiver.
+	^ self homeFrame receiver.
 ]
 
 { #category : #visiting }
@@ -485,7 +500,7 @@ CHInterpreter >> visitSequenceNode: aNode [
 
 { #category : #visiting }
 CHInterpreter >> visitSuperNode: aNode [
-	^ self receiver.
+	^ self homeFrame receiver.
 ]
 
 { #category : #visiting }
