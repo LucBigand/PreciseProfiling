@@ -142,12 +142,16 @@ CHInterpreter >> initializePrimitiveTable [
 	primitives at: 60	put: #primitiveAt.
 	primitives at: 61	put: #primitiveAtPut.
 	primitives at: 62	put: #primitiveSize.
-	primitives at: 63	put: #primitiveStringAt.
-	primitives at: 64	put: #primitiveStringAtPut.
-	primitives at: 64	put: #primitiveBasicNew.
-	primitives at: 64	put: #primitiveBasicNewVariable.
+	primitives at: 63	put: #primitiveAt.
+	primitives at: 64	put: #primitiveAtPut.
+	primitives at: 70	put: #primitiveBasicNew.
+	primitives at: 71	put: #primitiveBasicNewVariable.
+	primitives at: 105	put: #primitiveReplaceFromToWithStartingAt.
 	primitives at: 110	put: #primitiveIdentical.
 	primitives at: 111	put: #primitiveClass.
+	primitives at: 163	put: #primitiveIsReadOnlyObject.
+	primitives at: 170	put: #primitiveValue.
+	primitives at: 171	put: #primitiveAsInteger.
 	primitives at: 201	put: #primitiveBlockValue.
 	primitives at: 207	put: #primitiveBlockValue.
 ]
@@ -185,6 +189,11 @@ CHInterpreter >> popFrame [
 ]
 
 { #category : #primitives }
+CHInterpreter >> primitiveAsInteger [
+	^ self receiver asInteger
+]
+
+{ #category : #primitives }
 CHInterpreter >> primitiveAt [
 	self numberOfArguments < 1
 		ifTrue: [ CHPrimitiveFail signal ].
@@ -212,9 +221,9 @@ CHInterpreter >> primitiveAtPut [
 
 { #category : #primitives }
 CHInterpreter >> primitiveBasicNew [
-	self receiver isClass
-		ifFalse: [ CHPrimitiveFail signal ].
-	^ self receiver basicNew.
+	self numberOfArguments < 1
+		ifTrue: [ CHPrimitiveFail signal ].
+	^ (self receiver) basicNew: (self argumentAt: 1)
 ]
 
 { #category : #primitives }
@@ -251,6 +260,20 @@ CHInterpreter >> primitiveIdentical [
 	self numberOfArguments < 1
 		ifTrue: [ CHPrimitiveFail signal ].
 	^ (self receiver) == (self argumentAt: 1)
+]
+
+{ #category : #primitives }
+CHInterpreter >> primitiveIsReadOnlyObject [
+	^ self receiver isReadOnlyObject
+]
+
+{ #category : #primitives }
+CHInterpreter >> primitiveReplaceFromToWithStartingAt [
+	^ self receiver 
+		replaceFrom: (self argumentAt: 1)
+		to: (self argumentAt: 2)
+		with: (self argumentAt: 3)
+		startingAt: (self argumentAt: 4)
 ]
 
 { #category : #primitives }
@@ -357,6 +380,11 @@ CHInterpreter >> primitiveStringAt [
 	self receiver size < (self argumentAt: 1)
 		ifTrue: [ CHPrimitiveFail signal ].
 	^ self receiver at: (self argumentAt: 1).
+]
+
+{ #category : #primitives }
+CHInterpreter >> primitiveValue [
+	^ self receiver value: (self argumentAt: 1)
 ]
 
 { #category : #setting }
