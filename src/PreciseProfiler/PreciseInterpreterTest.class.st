@@ -52,8 +52,11 @@ PreciseInterpreterTest >> testInterpreteFactorial5 [
 { #category : #test }
 PreciseInterpreterTest >> testInterpreteJavadoc [
 	self
-		assert: (interpreter runOn: Javadoc method: #runOnPackage: andArguments: { SmallInteger package })
-		equals: 120.
+		assert: ((interpreter
+			runOn: Javadoc 
+			method: #runOnPackage: 
+			andArguments: { SmallInteger package })
+				beginsWith: 'Package : Kernel')
 ]
 
 { #category : #test }

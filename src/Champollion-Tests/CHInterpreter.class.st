@@ -69,7 +69,7 @@ CHInterpreter >> execute: anAst withReceiver: anObject [
 
 { #category : #visiting }
 CHInterpreter >> execute: anAst withReceiver: anObject andArguments: aCollection [
-	| result thisFrame |
+	| result thisFrame stackSize |
 	thisFrame := self pushNewFrame.
 	self tempAt: #___method put: anAst.
 	self tempAt: #self put: anObject.
@@ -81,12 +81,15 @@ CHInterpreter >> execute: anAst withReceiver: anObject andArguments: aCollection
 	anAst arguments
 		with: aCollection
 		do: [ :arg :value | self tempAt: arg name put: value].
+	stackSize := stack size. "Used for tests"
 	result := [ self visitNode: anAst ]
 		on: CHReturn
 		do: [ :return |
 			return homeFrame = thisFrame
 				ifTrue: [ return value ]
-				ifFalse: [ return pass ] ].
+				ifFalse: [ 
+					self popFrame.
+					return pass ] ].
 	self popFrame.
 	^ result
 ]
@@ -156,6 +159,7 @@ CHInterpreter >> initializePrimitiveTable [
 	primitives at: 175	put: #primitiveBasicIdentityHash.
 	primitives at: 201	put: #primitiveBlockValue.
 	primitives at: 207	put: #primitiveBlockValue.
+	primitives at: 'primitiveCompareString' put: #primitiveCompareString .
 	primitives at: 'primitiveStringHash' put: #primitiveStringHash
 ]
 
@@ -261,6 +265,16 @@ CHInterpreter >> primitiveBlockValue [
 { #category : #primitives }
 CHInterpreter >> primitiveClass [
 	^ self receiver class
+]
+
+{ #category : #primitives }
+CHInterpreter >> primitiveCompareString [
+	self numberOfArguments < 3
+		ifTrue: [ CHPrimitiveFail signal ].
+	^ self receiver 
+		compare: (self argumentAt: 1)
+		with: (self argumentAt: 2) 
+		collated: (self argumentAt: 3).
 ]
 
 { #category : #primitives }
