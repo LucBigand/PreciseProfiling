@@ -150,6 +150,7 @@ CHInterpreter >> initializePrimitiveTable [
 	primitives at: 64	put: #primitiveAtPut.
 	primitives at: 70	put: #primitiveBasicNew.
 	primitives at: 71	put: #primitiveBasicNewVariable.
+	primitives at: 75	put: #primitiveBasicIdentityHash.
 	primitives at: 105	put: #primitiveReplaceFromToWithStartingAt.
 	primitives at: 110	put: #primitiveIdentical.
 	primitives at: 111	put: #primitiveClass.
