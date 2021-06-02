@@ -2,7 +2,10 @@ Class {
 	#name : #PreciseInterpreter,
 	#superclass : #CHInterpreter,
 	#instVars : [
-		'methodList'
+		'methodList',
+		'rootNode',
+		'currentNode',
+		'nextNode'
 	],
 	#category : #PreciseProfiler
 }
@@ -32,6 +35,10 @@ PreciseInterpreter >> registerMethodCall: aCompiledMethod [
 	(methodList includesKey: method)
 		ifTrue: [ methodList at: method update: [ :count | count + 1 ] ]
 		ifFalse: [ methodList at: method put: 1 ].
+	rootNode 
+		ifNil: [ currentNode := rootNode := PreciseNode new initializeWith: method ]
+		ifNotNil: [ rootNode addMethodCall: method ]
+	
 ]
 
 { #category : #running }

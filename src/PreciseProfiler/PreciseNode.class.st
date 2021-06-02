@@ -1,8 +1,7 @@
 Class {
 	#name : #PreciseNode,
-	#superclass : #Object,
+	#superclass : #PreciseRoot,
 	#instVars : [
-		'childs',
 		'parent',
 		'method',
 		'numberOfCalls'
@@ -11,41 +10,9 @@ Class {
 }
 
 { #category : #setting }
-PreciseNode >> addChild: aNode [ 
-	childs add: aNode
-]
-
-{ #category : #setting }
-PreciseNode >> addMethodCall: aMethodName [
-	| child |
-	"Not optimized, rewrite it later"
-	((childs collect: [ :each | each methodName ]) includes: aMethodName)
-		ifTrue: [ 
-			child := childs detect: [ :each | each methodName == aMethodName ].
-			child incrementNumberOfCalls. ]
-		ifFalse: [ 
-			child := self class new
-				initializeWith: aMethodName;
-				parent: self;
-				yourself ].
-	^ child
-]
-
-{ #category : #accessing }
-PreciseNode >> childs [
-	^ childs
-]
-
-{ #category : #setting }
 PreciseNode >> incrementNumberOfCalls [
 	numberOfCalls := numberOfCalls + 1.
 	
-]
-
-{ #category : #initialization }
-PreciseNode >> initialize [
-	super initialize.
-	childs := OrderedCollection new.
 ]
 
 { #category : #initialization }
