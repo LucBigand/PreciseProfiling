@@ -36,6 +36,8 @@ CHGlobalScope >> read: aString [
 ]
 
 { #category : #utility }
-CHGlobalScope >> scopeDefining: aSring [
-	^ self.
+CHGlobalScope >> scopeDefining: aString [
+	(globalsDictionary includesKey: aString)
+		ifTrue: [ ^ self ] 
+		ifFalse: [ Exception new signal ]
 ]

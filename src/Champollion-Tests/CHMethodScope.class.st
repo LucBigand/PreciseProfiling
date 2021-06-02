@@ -57,8 +57,7 @@ CHMethodScope >> receiver: aCHInterpretable [
 CHMethodScope >> scopeDefining: aString [
 	(variables includesKey: aString)
 		ifTrue: [ ^ self ].
-		
-	^ self parentScope scopeDefining: aString
+	^ self parentScope scopeDefining: aString.
 ]
 
 { #category : #accessing }

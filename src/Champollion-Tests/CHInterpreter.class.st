@@ -136,6 +136,7 @@ CHInterpreter >> initializePrimitiveTable [
 	primitives at: 8	put: #primitiveSmallIntegerNotEqualsThan.
 	primitives at: 9	put: #primitiveSmallIntegerMultiply.
 	primitives at: 10	put: #primitiveSmallIntegerDivide.
+	primitives at: 11	put: #primitiveSmallIntegerModulo.
 	primitives at: 12	put: #primitiveSmallIntegerEuclidianDivide.
 	primitives at: 14	put: #primitiveSmallIntegerBitAnd.
 	primitives at: 17	put: #primitiveSmallIntegerBitShift.
@@ -152,8 +153,10 @@ CHInterpreter >> initializePrimitiveTable [
 	primitives at: 163	put: #primitiveIsReadOnlyObject.
 	primitives at: 170	put: #primitiveValue.
 	primitives at: 171	put: #primitiveAsInteger.
+	primitives at: 175	put: #primitiveBasicIdentityHash.
 	primitives at: 201	put: #primitiveBlockValue.
 	primitives at: 207	put: #primitiveBlockValue.
+	primitives at: 'primitiveStringHash' put: #primitiveStringHash
 ]
 
 { #category : #accessing }
@@ -217,6 +220,11 @@ CHInterpreter >> primitiveAtPut [
 	self receiver size <= (self argumentAt: 1)
 		ifTrue: [ CHPrimitiveFail signal ].
 	^ self receiver at: (self argumentAt: 1) put: (self argumentAt: 2).
+]
+
+{ #category : #primitives }
+CHInterpreter >> primitiveBasicIdentityHash [
+	^ self receiver basicIdentityHash
 ]
 
 { #category : #primitives }
@@ -358,6 +366,12 @@ CHInterpreter >> primitiveSmallIntegerMinus [
 ]
 
 { #category : #primitives }
+CHInterpreter >> primitiveSmallIntegerModulo [
+	self assertSmallIntegerReceiverAndArgument.
+	^ (self receiver) \\ (self argumentAt: 1).
+]
+
+{ #category : #primitives }
 CHInterpreter >> primitiveSmallIntegerMultiply [
 	self assertSmallIntegerReceiverAndArgument.
 	^ (self receiver) * (self argumentAt: 1).
@@ -380,6 +394,15 @@ CHInterpreter >> primitiveStringAt [
 	self receiver size < (self argumentAt: 1)
 		ifTrue: [ CHPrimitiveFail signal ].
 	^ self receiver at: (self argumentAt: 1).
+]
+
+{ #category : #primitives }
+CHInterpreter >> primitiveStringHash [
+	self numberOfArguments < 2
+		ifTrue: [ CHPrimitiveFail signal ].
+	^ self receiver 
+		stringHash: (self argumentAt: 1)
+		initialHash: (self argumentAt: 2)
 ]
 
 { #category : #primitives }
@@ -408,7 +431,10 @@ CHInterpreter >> receiver: aValue [
 
 { #category : #accessing }
 CHInterpreter >> scopeDefining: aName [
-	^ self currentScope scopeDefining: aName
+	^ [ self currentScope scopeDefining: aName ]
+		on: Exception
+		do: [ :exc |
+			self homeFrame scopeDefining: aName ]
 ]
 
 { #category : #accessing }
@@ -455,6 +481,17 @@ CHInterpreter >> visitBlockNode: aNode [
 		code: aNode;
 		definingContext: self topFrame;
 		yourself.
+]
+
+{ #category : #visiting }
+CHInterpreter >> visitClassVariableNode: aNode [
+	| lookupClass |
+	lookupClass := self receiver isClass
+		ifTrue: [ self receiver ] 
+		ifFalse: [ self receiver class ].
+	[ lookupClass classPool includesKey: aNode name ] whileFalse: 
+		[ lookupClass := lookupClass superclass ].
+	^ lookupClass classPool at: aNode name
 ]
 
 { #category : #visiting }
@@ -519,6 +556,8 @@ CHInterpreter >> visitSelfNode: aNode [
 
 { #category : #visiting }
 CHInterpreter >> visitSequenceNode: aNode [
+	(aNode statements size = 0)
+		ifTrue: [ ^ self homeFrame receiver ].
 	aNode temporaryNames
 		do: [ :each | self tempAt: each put: nil ].
 	aNode statements allButLast
