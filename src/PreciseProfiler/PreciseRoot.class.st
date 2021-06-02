@@ -21,7 +21,7 @@ PreciseRoot >> addMethodCall: aCompiledMethod [
 			child := childs detect: [ :each | each method == aCompiledMethod ].
 			child incrementNumberOfCalls. ]
 		ifFalse: [ 
-			child := self class new
+			child := PreciseNode new
 				initializeWith: aCompiledMethod;
 				parent: self;
 				yourself ].
@@ -37,4 +37,9 @@ PreciseRoot >> childs [
 PreciseRoot >> initialize [
 	super initialize.
 	childs := OrderedCollection new.
+]
+
+{ #category : #printing }
+PreciseRoot >> printString [
+	^ 'aPreciseRoot'
 ]

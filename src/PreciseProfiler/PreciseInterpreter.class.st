@@ -3,7 +3,6 @@ Class {
 	#superclass : #CHInterpreter,
 	#instVars : [
 		'methodList',
-		'rootNode',
 		'currentNode',
 		'nextNode'
 	],
@@ -19,11 +18,24 @@ PreciseInterpreter >> class: aClass hasMethod: aSelector [
 PreciseInterpreter >> initialize [
 	super initialize.
 	methodList := Dictionary new.
+	currentNode := PreciseRoot new.
 ]
 
 { #category : #accessing }
 PreciseInterpreter >> methodList [
 	^ methodList
+]
+
+{ #category : #setting }
+PreciseInterpreter >> popFrame [
+	currentNode := currentNode parent.
+	^ super popFrame.
+]
+
+{ #category : #setting }
+PreciseInterpreter >> pushNewFrame [
+	currentNode := nextNode.
+	^ super pushNewFrame.
 ]
 
 { #category : #visiting }
@@ -35,9 +47,7 @@ PreciseInterpreter >> registerMethodCall: aCompiledMethod [
 	(methodList includesKey: method)
 		ifTrue: [ methodList at: method update: [ :count | count + 1 ] ]
 		ifFalse: [ methodList at: method put: 1 ].
-	rootNode 
-		ifNil: [ currentNode := rootNode := PreciseNode new initializeWith: method ]
-		ifNotNil: [ rootNode addMethodCall: method ]
+	nextNode := currentNode addMethodCall: method.
 	
 ]
 

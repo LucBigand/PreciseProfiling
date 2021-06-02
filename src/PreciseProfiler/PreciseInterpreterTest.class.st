@@ -25,7 +25,7 @@ PreciseInterpreterTest >> testInterpreteCHInterpretableLastExpression [
 			CHInterpretable>>#lastExpression -> 1 .
 			True>>#ifTrue: -> 1 .
 			FullBlockClosure>>#value -> 1 .
-			SmallInteger>>#+ -> 1})
+			SmallInteger>>#+ -> 1}).
 ]
 
 { #category : #test }
