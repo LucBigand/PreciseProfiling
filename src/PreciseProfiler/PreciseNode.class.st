@@ -9,6 +9,12 @@ Class {
 	#category : #PreciseProfiler
 }
 
+{ #category : #printing }
+PreciseNode >> description [
+	method ifNil: [ ^ '' ].
+	^ method classBinding value asString, '>>#', method selector asString, ' - ', numberOfCalls asString
+]
+
 { #category : #setting }
 PreciseNode >> incrementNumberOfCalls [
 	numberOfCalls := numberOfCalls + 1.
@@ -39,7 +45,5 @@ PreciseNode >> parent: aPreciseNode [
 
 { #category : #printing }
 PreciseNode >> printString [
-	method isNil ifTrue: [ ^ 'aPreciseNode()' ].
-	^ 'aPreciseNode(', method classBinding value asString, '>>#', method selector asString,
-		' - ', numberOfCalls asString, ')'
+	^ 'aPreciseNode(', self description , ')'
 ]

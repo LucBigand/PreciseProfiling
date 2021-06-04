@@ -143,6 +143,7 @@ CHInterpreter >> initializePrimitiveTable [
 	primitives at: 12	put: #primitiveSmallIntegerEuclidianDivide.
 	primitives at: 14	put: #primitiveSmallIntegerBitAnd.
 	primitives at: 17	put: #primitiveSmallIntegerBitShift.
+	primitives at: 29	put: #primitiveSmallIntegerMultiply.
 	primitives at: 60	put: #primitiveAt.
 	primitives at: 61	put: #primitiveAtPut.
 	primitives at: 62	put: #primitiveSize.
@@ -155,11 +156,13 @@ CHInterpreter >> initializePrimitiveTable [
 	primitives at: 110	put: #primitiveIdentical.
 	primitives at: 111	put: #primitiveClass.
 	primitives at: 163	put: #primitiveIsReadOnlyObject.
+	primitives at: 169	put: #primitiveDifferent.
 	primitives at: 170	put: #primitiveValue.
 	primitives at: 171	put: #primitiveAsInteger.
 	primitives at: 175	put: #primitiveBasicIdentityHash.
 	primitives at: 201	put: #primitiveBlockValue.
 	primitives at: 207	put: #primitiveBlockValue.
+	primitives at: 'primDigitMultiplyNegative' put: #primitiveDigitMultiplyNegative.
 	primitives at: 'primitiveCompareString' put: #primitiveCompareString .
 	primitives at: 'primitiveStringHash' put: #primitiveStringHash
 ]
@@ -276,6 +279,22 @@ CHInterpreter >> primitiveCompareString [
 		compare: (self argumentAt: 1)
 		with: (self argumentAt: 2) 
 		collated: (self argumentAt: 3).
+]
+
+{ #category : #primitives }
+CHInterpreter >> primitiveDifferent [
+	self numberOfArguments < 1
+		ifTrue: [ CHPrimitiveFail signal ].
+	^ (self receiver) ~~ (self argumentAt: 1)
+]
+
+{ #category : #primitives }
+CHInterpreter >> primitiveDigitMultiplyNegative [
+	self numberOfArguments < 2
+		ifTrue: [ CHPrimitiveFail signal ].
+	^ self receiver
+		digitMultiply: (self argumentAt: 1)
+		neg: (self argumentAt: 2).
 ]
 
 { #category : #primitives }

@@ -14,6 +14,11 @@ PreciseInterpreter >> class: aClass hasMethod: aSelector [
 	^ (aClass methods collect: [ :each | each selector ]) includes: aSelector.
 ]
 
+{ #category : #display }
+PreciseInterpreter >> display [
+	PreciseInterpreterDisplay openOn: self
+]
+
 { #category : #initialization }
 PreciseInterpreter >> initialize [
 	super initialize.
@@ -49,6 +54,11 @@ PreciseInterpreter >> registerMethodCall: aCompiledMethod [
 		ifFalse: [ methodList at: method put: 1 ].
 	nextNode := currentNode addMethodCall: method.
 	
+]
+
+{ #category : #accessing }
+PreciseInterpreter >> rootNode [
+	^ currentNode
 ]
 
 { #category : #running }

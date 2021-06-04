@@ -15,6 +15,13 @@ PreciseInterpreterTest >> setUp [
 ]
 
 { #category : #test }
+PreciseInterpreterTest >> testInterpreteBiggerExponentiation [
+	self
+		assert: (interpreter runOn: 5 method: #** andArguments: #(300))
+		equals: (5 ** 300).
+]
+
+{ #category : #test }
 PreciseInterpreterTest >> testInterpreteCHInterpretableLastExpression [
 	self
 		assert: (interpreter runOn: (CHInterpretable new) method: #lastExpression andArguments: #() )
