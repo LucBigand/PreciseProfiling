@@ -33,14 +33,32 @@ PreciseInterpreterDisplay class >> openOn: aPreciseInterpreter [
 
 { #category : #initialization }
 PreciseInterpreterDisplay >> initializeListPage [
-	^ self newList
+	| listTemp |
+	listTemp := self newList
 		items: interpreter methodList associations;
 		display: [ :anAssociation | | method |
 			method := anAssociation key.
 			method classBinding value asString, '>>', method selector asString, ' - ',
 				anAssociation value asString];
 		sortingBlock: [ :e1 :e2 | e1 value > e2 value ];
+		activateOnSingleClick;
 		yourself.
+	
+	listTemp
+		contextMenu: [
+			self newMenu
+				addItem: [ :item |
+					item name: 'Browse';
+					action: [ Smalltalk tools browser openOnMethod: listTemp selectedItem key ] ];
+				addItem: [ :item |
+					item name: 'Inspect';
+					action: [ listTemp selectedItem inspect ] ] ];
+		whenActivatedDo: [
+			code := listTemp selectedItem key sourceCode.
+			self updatePresenter.
+		] .
+	
+	^ listTemp
 ]
 
 { #category : #initialization }
@@ -66,6 +84,20 @@ PreciseInterpreterDisplay >> initializeTreePage [
 		activateOnSingleClick;
 		yourself.
 	
+	treeTemp
+		contextMenu: [
+			self newMenu
+				addItem: [ :item |
+					item name: 'Browse';
+					action: [ Smalltalk tools browser openOnMethod: treeTemp selectedItem method ] ];
+				addItem: [ :item |
+					item name: 'Inspect';
+					action: [ treeTemp selectedItem inspect ] ] ];
+		whenActivatedDo: [
+			code := treeTemp selectedItem method sourceCode.
+			self updatePresenter.
+		] .
+	
 	^ treeTemp
 ]
 
@@ -80,4 +112,14 @@ PreciseInterpreterDisplay >> initializeWindow: aWindowPresenter [
 { #category : #setting }
 PreciseInterpreterDisplay >> interpreter: aPreciseInterpreter [
 	interpreter := aPreciseInterpreter
+]
+
+{ #category : #updating }
+PreciseInterpreterDisplay >> updateCodePresenter [
+	codePresenter text: code
+]
+
+{ #category : #updating }
+PreciseInterpreterDisplay >> updatePresenter [
+	self updateCodePresenter
 ]
