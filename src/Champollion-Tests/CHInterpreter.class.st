@@ -161,6 +161,7 @@ CHInterpreter >> initializePrimitiveTable [
 	primitives at: 171	put: #primitiveAsInteger.
 	primitives at: 175	put: #primitiveBasicIdentityHash.
 	primitives at: 201	put: #primitiveBlockValue.
+	primitives at: 202	put: #primitiveBlockValueWithArg.
 	primitives at: 207	put: #primitiveBlockValue.
 	primitives at: 'primDigitMultiplyNegative' put: #primitiveDigitMultiplyNegative.
 	primitives at: 'primitiveCompareString' put: #primitiveCompareString .
@@ -264,6 +265,11 @@ CHInterpreter >> primitiveBlockValue [
 	self tempAt: #__definingContext put: theBlock definingContext. 
 	sequenceNode temporaryNames do: [ :e | self tempAt: e put: nil ].
 	^ self visitNode: sequenceNode.
+]
+
+{ #category : #primitives }
+CHInterpreter >> primitiveBlockValueWithArg [
+	self halt.
 ]
 
 { #category : #primitives }
@@ -448,7 +454,6 @@ CHInterpreter >> primitiveValue [
 CHInterpreter >> pushNewFrame [
 	| newTop |
 	newTop := CHMethodScope new.
-	stack ifNotEmpty: [ newTop previousScope: self topFrame ].
 	stack push: newTop.
 	^ newTop.
 ]

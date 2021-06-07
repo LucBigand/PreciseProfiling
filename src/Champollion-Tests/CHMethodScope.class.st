@@ -4,11 +4,19 @@ Class {
 	#instVars : [
 		'receiver',
 		'variables',
-		'parentScope',
-		'previousScope'
+		'parentScope'
 	],
 	#category : #'Champollion-Tests'
 }
+
+{ #category : #initialization }
+CHMethodScope >> homeFrame [
+	| currentLookupFrame |
+	currentLookupFrame := self.
+	[ currentLookupFrame includesKey: #__definingContext ]
+		whileTrue: [ currentLookupFrame := currentLookupFrame read: #__definingContext ].
+	^ currentLookupFrame
+]
 
 { #category : #testing }
 CHMethodScope >> includesKey: aKey [
@@ -31,16 +39,11 @@ CHMethodScope >> parentScope: anObject [
 	parentScope := anObject.
 ]
 
-{ #category : #setting }
-CHMethodScope >> previousScope: aMethodScope [
-	previousScope := aMethodScope
-]
-
 { #category : #accessing }
 CHMethodScope >> read: aString [
 	(self includesKey: aString)
 		ifTrue: [ ^ variables at: aString ] 
-		ifFalse: [ ^ previousScope read: aString ] .
+		ifFalse: [ ^ self homeFrame read: aString ] .
 ]
 
 { #category : #accessing }
