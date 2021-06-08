@@ -14,6 +14,12 @@ AbstractPreciseNonRootNode >> incrementNumberOfCalls [
 	
 ]
 
+{ #category : #initializing }
+AbstractPreciseNonRootNode >> initialize [
+	super initialize.
+	numberOfCalls := 1.
+]
+
 { #category : #accessing }
 AbstractPreciseNonRootNode >> parent [
 	^ parent

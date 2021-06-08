@@ -8,24 +8,32 @@ Class {
 }
 
 { #category : #adding }
+AbstractPreciseNode >> addAllocation [
+	childs do: [ :child |
+		(child class == PreciseAllocationNode) ifTrue: [ 
+			child incrementNumberOfCalls.
+			^ child ] ].
+	^ PreciseAllocationNode new
+		parent: self;
+		yourself.
+]
+
+{ #category : #adding }
 AbstractPreciseNode >> addChild: aNode [ 
 	childs add: aNode
 ]
 
 { #category : #adding }
 AbstractPreciseNode >> addMethodCall: aCompiledMethod [
-	| child |
-	"Not optimized, rewrite it later"
-	((childs collect: [ :each | each method ]) includes: aCompiledMethod)
-		ifTrue: [ 
-			child := childs detect: [ :each | each method == aCompiledMethod ].
-			child incrementNumberOfCalls. ]
-		ifFalse: [ 
-			child := PreciseMethodCallNode new
-				initializeWith: aCompiledMethod;
-				parent: self;
-				yourself ].
-	^ child
+	childs do: [ :child |
+		(child class == PreciseMethodCallNode) ifTrue: [ 
+			(child method == aCompiledMethod ) ifTrue: [ 
+				child incrementNumberOfCalls.
+				^ child ] ] ].
+	^ PreciseMethodCallNode new
+		method: aCompiledMethod;
+		parent: self;
+		yourself.
 ]
 
 { #category : #accessing }

@@ -8,7 +8,7 @@ Class {
 PreciseNodeTest >> testAddMethodCall [
 	| node |
 	node := PreciseMethodCallNode new
-		initializeWith: (SmallInteger>>#+);
+		method: (SmallInteger>>#+);
 		yourself.
 	node addMethodCall: (SmallInteger>>#-).
 	2 timesRepeat: [ node addMethodCall: (SmallInteger>>#*) ].

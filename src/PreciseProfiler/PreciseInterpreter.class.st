@@ -50,6 +50,7 @@ PreciseInterpreter >> registerAllocation [
 	(methodList includesKey: key )
 		ifTrue: [ methodList at: key update: [ :count | count + 1 ] ] 
 		ifFalse: [ methodList at: key put: 1 ].
+	currentNode addAllocation
 ]
 
 { #category : #visiting }

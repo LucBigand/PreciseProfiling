@@ -13,13 +13,12 @@ PreciseMethodCallNode >> description [
 	^ method classBinding value asString, '>>#', method selector asString, ' - ', numberOfCalls asString
 ]
 
-{ #category : #initialization }
-PreciseMethodCallNode >> initializeWith: aCompiledMethod [ 
-	method := aCompiledMethod.
-	numberOfCalls := 1.
-]
-
 { #category : #accessing }
 PreciseMethodCallNode >> method [
 	^ method
+]
+
+{ #category : #setting }
+PreciseMethodCallNode >> method: aCompiledMethod [
+	method := aCompiledMethod
 ]
