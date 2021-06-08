@@ -59,12 +59,12 @@ PreciseInterpreterTest >> testInterpreteFactorial5 [
 
 { #category : #test }
 PreciseInterpreterTest >> testInterpreteJavadoc [
-	"self
+	self
 		assert: ((interpreter
 			runOn: Javadoc 
 			method: #runOnPackage: 
 			andArguments: { SmallInteger package })
-				beginsWith: 'Package : Kernel')"
+				beginsWith: 'Package : Kernel')
 ]
 
 { #category : #test }

@@ -4,7 +4,7 @@ Class {
 	#instVars : [
 		'elements'
 	],
-	#category : #'Champollion-Tests'
+	#category : #'Champollion-Core'
 }
 
 { #category : #accessing }

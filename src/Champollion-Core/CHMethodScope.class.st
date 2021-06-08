@@ -6,7 +6,7 @@ Class {
 		'variables',
 		'parentScope'
 	],
-	#category : #'Champollion-Tests'
+	#category : #'Champollion-Core'
 }
 
 { #category : #initialization }

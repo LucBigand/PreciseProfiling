@@ -5,7 +5,7 @@ Class {
 		'receiver',
 		'parentScope'
 	],
-	#category : #'Champollion-Tests'
+	#category : #'Champollion-Core'
 }
 
 { #category : #accessing }

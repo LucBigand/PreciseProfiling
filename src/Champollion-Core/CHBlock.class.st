@@ -5,7 +5,7 @@ Class {
 		'code',
 		'definingContext'
 	],
-	#category : #'Champollion-Tests'
+	#category : #'Champollion-Core'
 }
 
 { #category : #accessing }

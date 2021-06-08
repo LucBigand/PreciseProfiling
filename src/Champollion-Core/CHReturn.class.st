@@ -5,7 +5,7 @@ Class {
 		'value',
 		'homeFrame'
 	],
-	#category : #'Champollion-Tests'
+	#category : #'Champollion-Core'
 }
 
 { #category : #accessing }

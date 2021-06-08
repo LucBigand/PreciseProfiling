@@ -4,7 +4,7 @@ Class {
 	#instVars : [
 		'globalsDictionary'
 	],
-	#category : #'Champollion-Tests'
+	#category : #'Champollion-Core'
 }
 
 { #category : #accessing }
