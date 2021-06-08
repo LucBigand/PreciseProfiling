@@ -38,8 +38,10 @@ PreciseInterpreterDisplay >> initializeListPage [
 		items: interpreter methodList associations;
 		display: [ :anAssociation | | method |
 			method := anAssociation key.
-			method classBinding value asString, '>>', method selector asString, ' - ',
-				anAssociation value asString];
+			method isString 
+				ifTrue: [ method, ' - ', anAssociation value asString ]
+				ifFalse: [ method classBinding value asString, '>>', method selector asString, ' - ',
+					anAssociation value asString ] ];
 		sortingBlock: [ :e1 :e2 | e1 value > e2 value ];
 		activateOnSingleClick;
 		yourself.

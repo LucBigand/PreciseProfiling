@@ -44,6 +44,15 @@ PreciseInterpreter >> pushNewFrame [
 ]
 
 { #category : #visiting }
+PreciseInterpreter >> registerAllocation [
+	| key |
+	key := 'Object allocation'.
+	(methodList includesKey: key )
+		ifTrue: [ methodList at: key update: [ :count | count + 1 ] ] 
+		ifFalse: [ methodList at: key put: 1 ].
+]
+
+{ #category : #visiting }
 PreciseInterpreter >> registerMethodCall: aCompiledMethod [
 	| method |
 	method := (aCompiledMethod classBinding value == CHBlock)
@@ -76,6 +85,12 @@ PreciseInterpreter >> runOn: aReceiver method: aSelector andArguments: args [
 	ast := (lookupClass >> aSelector) parseTree.
 	self registerMethodCall: (lookupClass >> aSelector).
 	^ self execute: ast withReceiver: aReceiver andArguments: args.
+]
+
+{ #category : #visiting }
+PreciseInterpreter >> visitAssignmentNode: aNode [
+	self registerAllocation.
+	^ super visitAssignmentNode: aNode
 ]
 
 { #category : #visiting }
