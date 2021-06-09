@@ -238,9 +238,7 @@ CHInterpreter >> primitiveBasicIdentityHash [
 
 { #category : #primitives }
 CHInterpreter >> primitiveBasicNew [
-	self numberOfArguments < 1
-		ifTrue: [ CHPrimitiveFail signal ].
-	^ (self receiver) basicNew: (self argumentAt: 1)
+	^ self receiver basicNew
 ]
 
 { #category : #primitives }

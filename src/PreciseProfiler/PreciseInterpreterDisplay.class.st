@@ -31,6 +31,11 @@ PreciseInterpreterDisplay class >> openOn: aPreciseInterpreter [
 		openWithSpec.
 ]
 
+{ #category : #accessing }
+PreciseInterpreterDisplay >> codePresenter [
+	^ codePresenter
+]
+
 { #category : #initialization }
 PreciseInterpreterDisplay >> initializeListPage [
 	| listTemp |
@@ -114,6 +119,11 @@ PreciseInterpreterDisplay >> initializeWindow: aWindowPresenter [
 { #category : #setting }
 PreciseInterpreterDisplay >> interpreter: aPreciseInterpreter [
 	interpreter := aPreciseInterpreter
+]
+
+{ #category : #accessing }
+PreciseInterpreterDisplay >> mainPresenter [
+	^ mainPresenter
 ]
 
 { #category : #updating }

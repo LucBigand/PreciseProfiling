@@ -16,7 +16,7 @@ PreciseInterpreter >> class: aClass hasMethod: aSelector [
 
 { #category : #display }
 PreciseInterpreter >> display [
-	PreciseInterpreterDisplay openOn: self
+	^ PreciseInterpreterDisplay openOn: self
 ]
 
 { #category : #initialization }
@@ -45,12 +45,12 @@ PreciseInterpreter >> pushNewFrame [
 
 { #category : #visiting }
 PreciseInterpreter >> registerAllocation [
-	| key |
+	"| key |
 	key := 'Object allocation'.
 	(methodList includesKey: key )
 		ifTrue: [ methodList at: key update: [ :count | count + 1 ] ] 
 		ifFalse: [ methodList at: key put: 1 ].
-	currentNode addAllocation
+	currentNode addAllocation"
 ]
 
 { #category : #visiting }

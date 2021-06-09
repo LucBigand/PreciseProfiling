@@ -7,7 +7,7 @@ Class {
 { #category : #test }
 PreciseNodeTest >> testAddMethodCall [
 	| node |
-	node := PreciseMethodCallNode new
+	node := PreciseNode new
 		method: (SmallInteger>>#+);
 		yourself.
 	node addMethodCall: (SmallInteger>>#-).
@@ -20,8 +20,8 @@ PreciseNodeTest >> testAddMethodCall [
 { #category : #test }
 PreciseNodeTest >> testSettingParentAddsChildInParent [
 	| parentNode childNode |
-	parentNode := PreciseMethodCallNode new.
-	childNode := PreciseMethodCallNode new
+	parentNode := PreciseNode new.
+	childNode := PreciseNode new
 		parent: parentNode;
 		yourself.
 	self assert: parentNode childs first equals: childNode.

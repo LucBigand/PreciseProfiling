@@ -9,13 +9,13 @@ Class {
 
 { #category : #adding }
 AbstractPreciseNode >> addAllocation [
-	childs do: [ :child |
+	"childs do: [ :child |
 		(child class == PreciseAllocationNode) ifTrue: [ 
 			child incrementNumberOfCalls.
 			^ child ] ].
 	^ PreciseAllocationNode new
 		parent: self;
-		yourself.
+		yourself."
 ]
 
 { #category : #adding }
@@ -26,11 +26,11 @@ AbstractPreciseNode >> addChild: aNode [
 { #category : #adding }
 AbstractPreciseNode >> addMethodCall: aCompiledMethod [
 	childs do: [ :child |
-		(child class == PreciseMethodCallNode) ifTrue: [ 
+		(child class == PreciseNode) ifTrue: [ 
 			(child method == aCompiledMethod ) ifTrue: [ 
 				child incrementNumberOfCalls.
 				^ child ] ] ].
-	^ PreciseMethodCallNode new
+	^ PreciseNode new
 		method: aCompiledMethod;
 		parent: self;
 		yourself.
@@ -50,6 +50,11 @@ AbstractPreciseNode >> description [
 AbstractPreciseNode >> initialize [
 	super initialize.
 	childs := OrderedCollection new.
+]
+
+{ #category : #printing }
+AbstractPreciseNode >> printOn: aStream [
+	^ aStream << ( self className , '(' , self description , ')' )
 ]
 
 { #category : #printing }

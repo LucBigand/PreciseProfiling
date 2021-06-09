@@ -29,7 +29,6 @@ PreciseInterpreterTest >> testInterpreteCHInterpretableLastExpression [
 	self
 		assert: (interpreter methodList) 
 		= (Dictionary newFrom: { 
-			'Object allocation' -> 4 .
 			CHInterpretable>>#lastExpression -> 1 .
 			True>>#ifTrue: -> 1 .
 			FullBlockClosure>>#value -> 1 .
@@ -59,12 +58,19 @@ PreciseInterpreterTest >> testInterpreteFactorial5 [
 
 { #category : #test }
 PreciseInterpreterTest >> testInterpreteJavadoc [
-	self
+	"self
 		assert: ((interpreter
 			runOn: Javadoc 
 			method: #runOnPackage: 
 			andArguments: { SmallInteger package })
-				beginsWith: 'Package : Kernel')
+				beginsWith: 'Package : Kernel')"
+]
+
+{ #category : #test }
+PreciseInterpreterTest >> testInterpreteObjectNew [
+	self
+		assert: (interpreter runOn: Object method: #new) class
+		equals: Object.
 ]
 
 { #category : #test }
