@@ -3,3 +3,8 @@ Class {
 	#superclass : #AbstractPreciseNode,
 	#category : #PreciseProfiler
 }
+
+{ #category : #setting }
+PreciseRoot >> childNodeClass: aClass [
+	childNodeClass := aClass 
+]

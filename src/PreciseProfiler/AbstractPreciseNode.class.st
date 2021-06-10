@@ -2,21 +2,11 @@ Class {
 	#name : #AbstractPreciseNode,
 	#superclass : #Object,
 	#instVars : [
-		'childs'
+		'childs',
+		'childNodeClass'
 	],
 	#category : #PreciseProfiler
 }
-
-{ #category : #adding }
-AbstractPreciseNode >> addAllocation [
-	"childs do: [ :child |
-		(child class == PreciseAllocationNode) ifTrue: [ 
-			child incrementNumberOfCalls.
-			^ child ] ].
-	^ PreciseAllocationNode new
-		parent: self;
-		yourself."
-]
 
 { #category : #adding }
 AbstractPreciseNode >> addChild: aNode [ 
@@ -26,11 +16,10 @@ AbstractPreciseNode >> addChild: aNode [
 { #category : #adding }
 AbstractPreciseNode >> addMethodCall: aCompiledMethod [
 	childs do: [ :child |
-		(child class == PreciseNode) ifTrue: [ 
-			(child method == aCompiledMethod ) ifTrue: [ 
-				child incrementNumberOfCalls.
-				^ child ] ] ].
-	^ PreciseNode new
+		(child method == aCompiledMethod ) ifTrue: [ 
+			child incrementNumberOfCalls.
+			^ child ] ].
+	^ childNodeClass new
 		method: aCompiledMethod;
 		parent: self;
 		yourself.
@@ -50,6 +39,7 @@ AbstractPreciseNode >> description [
 AbstractPreciseNode >> initialize [
 	super initialize.
 	childs := OrderedCollection new.
+	childNodeClass := PreciseNode.
 ]
 
 { #category : #printing }
