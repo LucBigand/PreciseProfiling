@@ -38,6 +38,11 @@ PreciseNode >> method: aCompiledMethod [
 ]
 
 { #category : #accessing }
+PreciseNode >> numberOfCalls [
+	^ numberOfCalls
+]
+
+{ #category : #accessing }
 PreciseNode >> parent [
 	^ parent
 ]

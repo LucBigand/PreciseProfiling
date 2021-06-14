@@ -70,13 +70,15 @@ PreciseInterpreter >> runOn: aClass method: aSelector [
 
 { #category : #running }
 PreciseInterpreter >> runOn: aReceiver method: aSelector andArguments: args [
-	| ast lookupClass |
+	| ast lookupClass res |
 	lookupClass := aReceiver class.
 	[ (lookupClass isNotNil) and: (self class: lookupClass hasMethod: aSelector) not ] whileTrue: 
 		[ lookupClass := lookupClass superclass ].
 	ast := (lookupClass >> aSelector) parseTree.
 	self registerMethodCall: (lookupClass >> aSelector).
-	^ self execute: ast withReceiver: aReceiver andArguments: args.
+	res := self execute: ast withReceiver: aReceiver andArguments: args.
+	self rootNode computeMaxNumberOfCall.
+	^ res
 ]
 
 { #category : #visiting }

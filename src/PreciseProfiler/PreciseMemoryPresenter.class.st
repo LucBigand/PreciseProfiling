@@ -38,7 +38,7 @@ PreciseMemoryPresenter >> displayNode: aPreciseMemoryNode [
 			withBorderAttachPoint;
 			from: selfBox;
 			to: childBox;
-			width: 1;
+			width: (self lineWidthFor: node );
 			yourself).
 		line := line + 1 ].
 	depth := depth - 1.
@@ -69,4 +69,11 @@ PreciseMemoryPresenter >> initializeWith: aPreciseMemoryInterpreter [
 	scale := NSScale linear
 	range: { Color blue . Color red }; 
                 domain: { 0 . maxMemory }.
+]
+
+{ #category : #calculating }
+PreciseMemoryPresenter >> lineWidthFor: aNode [
+	" Function that associates to a node the width of the line that connects it to its parent
+	in the presenter. Will probably be modified later "
+	^ aNode numberOfCalls / interpreter rootNode maxNumberOfCalls
 ]
