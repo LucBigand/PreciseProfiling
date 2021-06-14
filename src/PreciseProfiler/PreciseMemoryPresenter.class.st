@@ -5,7 +5,8 @@ Class {
 		'depth',
 		'line',
 		'scale',
-		'interpreter'
+		'interpreter',
+		'colorDictionary'
 	],
 	#category : #PreciseProfiler
 }
@@ -20,11 +21,23 @@ PreciseMemoryPresenter class >> openOn: aPreciseMemoryInterpreter [
 
 { #category : #display }
 PreciseMemoryPresenter >> createBoxFor: aPreciseMemoryNode [
-	^ self add: (RSBox new
+	|  colorr class box |
+	class := aPreciseMemoryNode method classBinding.
+	colorr := (colorDictionary includesKey: class)
+		ifTrue: [ colorDictionary at: class ]
+		ifFalse: [ 
+			| newColor |
+			newColor := Color random.
+			colorDictionary at: class put: newColor.
+			newColor ].
+	box := (RSBox new
 		size: 10;
-		color: (scale scale: aPreciseMemoryNode memoryUsed);
+		color: colorr ;
+		borderColor: (scale scale: aPreciseMemoryNode memoryUsed);
 		translateTo: (depth * 20)@(line * 20);
 		yourself).
+	box border width: 2.
+	^ self add: box
 ]
 
 { #category : #display }
@@ -57,6 +70,7 @@ PreciseMemoryPresenter >> displayNodes [
 { #category : #initialization }
 PreciseMemoryPresenter >> initialize [
 	super initialize.
+	colorDictionary := Dictionary new.
 	depth := 0.
 	line := 0.
 ]
