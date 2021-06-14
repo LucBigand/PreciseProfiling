@@ -20,7 +20,7 @@ PreciseMemoryPresenter class >> openOn: aPreciseMemoryInterpreter [
 
 { #category : #display }
 PreciseMemoryPresenter >> createBoxFor: aPreciseMemoryNode [
-	self add: (RSBox new
+	^ self add: (RSBox new
 		size: 10;
 		color: (scale scale: aPreciseMemoryNode memoryUsed);
 		translateTo: (depth * 20)@(line * 20);
@@ -29,13 +29,21 @@ PreciseMemoryPresenter >> createBoxFor: aPreciseMemoryNode [
 
 { #category : #display }
 PreciseMemoryPresenter >> displayNode: aPreciseMemoryNode [
-	self createBoxFor: aPreciseMemoryNode.
+	| selfBox childBox |
+	selfBox := self createBoxFor: aPreciseMemoryNode.
 	depth := depth + 1.
 	aPreciseMemoryNode childs do: [ :node |
-		self displayNode: node.
+		childBox := self displayNode: node.
+		self add: (RSLine new
+			withBorderAttachPoint;
+			from: selfBox;
+			to: childBox;
+			width: 1;
+			yourself).
 		line := line + 1 ].
 	depth := depth - 1.
 	aPreciseMemoryNode childs ifNotEmpty: [ line := line - 1 ].
+	^ selfBox
 ]
 
 { #category : #display }
