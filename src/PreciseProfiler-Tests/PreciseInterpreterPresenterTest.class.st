@@ -4,7 +4,7 @@ Class {
 	#instVars : [
 		'window'
 	],
-	#category : #PreciseProfiler
+	#category : #'PreciseProfiler-Tests'
 }
 
 { #category : #test }

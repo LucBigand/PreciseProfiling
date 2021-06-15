@@ -33,6 +33,7 @@ PreciseMemoryPresenter >> createBoxFor: aPreciseMemoryNode [
 		size: 10;
 		color: colorr ;
 		borderColor: (scale scale: aPreciseMemoryNode memoryUsed);
+		@ (RSPopup text: 'test');
 		yourself).
 	box border width: 2.
 	boxes add: box.
@@ -83,5 +84,5 @@ PreciseMemoryPresenter >> initializeWith: aPreciseMemoryInterpreter [
 PreciseMemoryPresenter >> lineWidthFor: aNode [
 	" Function that associates to a node the width of the line that connects it to its parent
 	in the presenter. Will probably be modified later "
-	^ aNode numberOfCalls / interpreter rootNode maxNumberOfCalls
+	^ 3 * aNode numberOfCalls / interpreter rootNode maxNumberOfCalls
 ]

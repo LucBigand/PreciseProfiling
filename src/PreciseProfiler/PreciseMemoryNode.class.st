@@ -4,7 +4,8 @@ Class {
 	#instVars : [
 		'memoryUsed',
 		'classes',
-		'numberOfAllocations'
+		'numberOfAllocations',
+		'updated'
 	],
 	#category : #PreciseProfiler
 }
@@ -32,6 +33,14 @@ PreciseMemoryNode >> initialize [
 	numberOfAllocations := 0.
 	classes := Dictionary new.
 	childNodeClass := self class.
+	updated := false.
+]
+
+{ #category : #printing }
+PreciseMemoryNode >> longDescription [
+	method ifNil: [ ^ '' ].
+	^ method classBinding value asString, '>>#', method selector asString, ' - ',
+		memoryUsed asString , ' bytes, ' , numberOfAllocations asString , ' allocations'
 ]
 
 { #category : #accessing }
@@ -46,8 +55,10 @@ PreciseMemoryNode >> numberOfAllocations [
 
 { #category : #updating }
 PreciseMemoryNode >> updateMemoryAndAllocation [
-	self updateNumberOfAllocations.
-	self updateMemoryUsed.
+	updated ifFalse: [ 
+		self updateNumberOfAllocations.
+		self updateMemoryUsed.
+		updated := true.]
 ]
 
 { #category : #updating }

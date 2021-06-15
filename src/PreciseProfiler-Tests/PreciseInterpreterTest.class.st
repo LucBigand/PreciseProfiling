@@ -4,7 +4,7 @@ Class {
 	#instVars : [
 		'interpreter'
 	],
-	#category : #PreciseProfiler
+	#category : #'PreciseProfiler-Tests'
 }
 
 { #category : #setup }

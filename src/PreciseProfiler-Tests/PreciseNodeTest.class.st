@@ -1,7 +1,7 @@
 Class {
 	#name : #PreciseNodeTest,
 	#superclass : #TestCase,
-	#category : #PreciseProfiler
+	#category : #'PreciseProfiler-Tests'
 }
 
 { #category : #test }
