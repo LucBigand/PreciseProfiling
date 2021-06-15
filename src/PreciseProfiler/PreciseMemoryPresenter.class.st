@@ -2,11 +2,10 @@ Class {
 	#name : #PreciseMemoryPresenter,
 	#superclass : #RSCanvas,
 	#instVars : [
-		'depth',
-		'line',
 		'scale',
 		'interpreter',
-		'colorDictionary'
+		'colorDictionary',
+		'boxes'
 	],
 	#category : #PreciseProfiler
 }
@@ -34,17 +33,16 @@ PreciseMemoryPresenter >> createBoxFor: aPreciseMemoryNode [
 		size: 10;
 		color: colorr ;
 		borderColor: (scale scale: aPreciseMemoryNode memoryUsed);
-		translateTo: (depth * 20)@(line * 20);
 		yourself).
 	box border width: 2.
-	^ self add: box
+	boxes add: box.
+	^ box
 ]
 
 { #category : #display }
 PreciseMemoryPresenter >> displayNode: aPreciseMemoryNode [
 	| selfBox childBox |
 	selfBox := self createBoxFor: aPreciseMemoryNode.
-	depth := depth + 1.
 	aPreciseMemoryNode childs do: [ :node |
 		childBox := self displayNode: node.
 		self add: (RSLine new
@@ -52,18 +50,15 @@ PreciseMemoryPresenter >> displayNode: aPreciseMemoryNode [
 			from: selfBox;
 			to: childBox;
 			width: (self lineWidthFor: node );
-			yourself).
-		line := line + 1 ].
-	depth := depth - 1.
-	aPreciseMemoryNode childs ifNotEmpty: [ line := line - 1 ].
+			yourself)].
 	^ selfBox
 ]
 
 { #category : #display }
 PreciseMemoryPresenter >> displayNodes [
-	interpreter rootNode childs do: [ :node | 
-		self displayNode: node.
-		line := line + 1 ].
+	interpreter rootNode childs do: [ :node | self displayNode: node].
+	self addAll: boxes.
+	RSHorizontalTreeLayout on: boxes.
 	self zoomToFit.
 ]
 
@@ -71,8 +66,7 @@ PreciseMemoryPresenter >> displayNodes [
 PreciseMemoryPresenter >> initialize [
 	super initialize.
 	colorDictionary := Dictionary new.
-	depth := 0.
-	line := 0.
+	boxes := OrderedCollection new.
 ]
 
 { #category : #initialization }
@@ -81,8 +75,8 @@ PreciseMemoryPresenter >> initializeWith: aPreciseMemoryInterpreter [
 	interpreter := aPreciseMemoryInterpreter.
 	maxMemory := (aPreciseMemoryInterpreter rootNode childs collect: [ :node | node memoryUsed ]) max.
 	scale := NSScale linear
-	range: { Color blue . Color red }; 
-                domain: { 0 . maxMemory }.
+		range: { Color blue . Color red }; 
+		domain: { 0 . maxMemory }.
 ]
 
 { #category : #calculating }
