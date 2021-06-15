@@ -16,11 +16,16 @@ AllocationDictionary >> addAllocation: anObject [
 
 { #category : #adding }
 AllocationDictionary >> addFromDictionary: anAllocationDictionary [
-	anAllocationDictionary keysDo: [ :class |
+	anAllocationDictionary get keysDo: [ :class |
 		(dictionary includesKey: class )
-			ifFalse: [ dictionary at: class class put: AllocationEntry new ].
+			ifFalse: [ dictionary at: class put: AllocationEntry new ].
 		(dictionary at: class) addFromEntry: (anAllocationDictionary at: class).
 	]
+]
+
+{ #category : #accessing }
+AllocationDictionary >> at: aClass [
+	^ dictionary at: aClass
 ]
 
 { #category : #accessing }
