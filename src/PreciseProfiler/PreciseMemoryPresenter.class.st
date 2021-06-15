@@ -39,7 +39,7 @@ PreciseMemoryPresenter >> createBoxFor: aPreciseMemoryNode [
 			innerBox := (RSBox new
 				size: 10;
 				color: ( self colorFor: class );
-				@ (RSPopup text: 'TODO');
+				@ (RSPopup text: (entry directAllocations asString,' allocations of ', class asString ));
 				yourself).
 			outterBox add: innerBox.]].
 	outterBox := outterBox asShape.
