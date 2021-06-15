@@ -27,7 +27,7 @@ PreciseMemoryInterpreter >> registerAllocation: anObject [
 PreciseMemoryInterpreter >> runOn: aReceiver method: aSelector andArguments: args [
 	| result |
 	result := super runOn: aReceiver method: aSelector andArguments: args.
-	currentNode childs do: [ :child | child updateMemoryAndAllocation].
+	currentNode childs do: [ :child | child update].
 	^ result
 ]
 

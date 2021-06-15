@@ -33,7 +33,7 @@ PreciseMemoryPresenter >> createBoxFor: aPreciseMemoryNode [
 		size: 10;
 		color: colorr ;
 		borderColor: (scale scale: aPreciseMemoryNode memoryUsed);
-		@ (RSPopup text: 'test');
+		@ (RSPopup text: aPreciseMemoryNode longDescription);
 		yourself).
 	box border width: 2.
 	boxes add: box.

@@ -3,9 +3,9 @@ Class {
 	#superclass : #PreciseNode,
 	#instVars : [
 		'memoryUsed',
-		'classes',
 		'numberOfAllocations',
-		'updated'
+		'updated',
+		'allocationDict'
 	],
 	#category : #PreciseProfiler
 }
@@ -14,9 +14,7 @@ Class {
 PreciseMemoryNode >> addAllocation: anObject [
 	memoryUsed := memoryUsed + anObject sizeInMemory.
 	numberOfAllocations := numberOfAllocations + 1.
-	(classes includesKey: anObject class)
-		ifTrue: [ classes at: anObject class update: [ :count | count + 1 ] ]
-		ifFalse: [ classes at: anObject class put: 1 ]
+	allocationDict addAllocation: anObject.
 ]
 
 { #category : #printing }
@@ -31,16 +29,22 @@ PreciseMemoryNode >> initialize [
 	super initialize.
 	memoryUsed := 0.
 	numberOfAllocations := 0.
-	classes := Dictionary new.
+	allocationDict := AllocationDictionary new.
 	childNodeClass := self class.
 	updated := false.
 ]
 
 { #category : #printing }
 PreciseMemoryNode >> longDescription [
+	| res |
 	method ifNil: [ ^ '' ].
-	^ method classBinding value asString, '>>#', method selector asString, ' - ',
-		memoryUsed asString , ' bytes, ' , numberOfAllocations asString , ' allocations'
+	res := '<' , method classBinding value asString, '>>', method selector asString, '>', String cr,
+		'# Executions: ', numberOfCalls asString , String cr.
+	allocationDict get keysDo: [ :class | | entry |
+		entry := allocationDict at: class.
+		res := res , class asString , ' - ' , entry totalAllocations asString , ' allocations, ',
+			 entry totalMemoryUsed asString , ' bytes', String cr ].
+	^ res
 ]
 
 { #category : #accessing }
@@ -54,11 +58,20 @@ PreciseMemoryNode >> numberOfAllocations [
 ]
 
 { #category : #updating }
-PreciseMemoryNode >> updateMemoryAndAllocation [
-	updated ifFalse: [ 
-		self updateNumberOfAllocations.
-		self updateMemoryUsed.
-		updated := true.]
+PreciseMemoryNode >> update [
+
+	updated ifTrue: [ ^ self ].
+	self updateNumberOfAllocations;
+		updateMemoryUsed;
+		updateAllocationDict.
+	updated := true
+]
+
+{ #category : #updating }
+PreciseMemoryNode >> updateAllocationDict [
+	childs do: [ :child | 
+		allocationDict addFromDictionary: child updateAllocationDict ].
+	^ allocationDict
 ]
 
 { #category : #updating }
