@@ -18,26 +18,36 @@ PreciseMemoryPresenter class >> openOn: aPreciseMemoryInterpreter [
 		open.
 ]
 
+{ #category : #utilities }
+PreciseMemoryPresenter >> colorFor: aClass [
+	(colorDictionary includesKey: aClass)
+		ifTrue: [ ^ colorDictionary at: aClass ]
+		ifFalse: [ | newColor |
+			newColor := Color random.
+			colorDictionary at: aClass put: newColor.
+			^ newColor ].
+]
+
 { #category : #display }
 PreciseMemoryPresenter >> createBoxFor: aPreciseMemoryNode [
-	|  colorr class box |
-	class := aPreciseMemoryNode method classBinding.
-	colorr := (colorDictionary includesKey: class)
-		ifTrue: [ colorDictionary at: class ]
-		ifFalse: [ 
-			| newColor |
-			newColor := Color random.
-			colorDictionary at: class put: newColor.
-			newColor ].
-	box := (RSBox new
-		size: 10;
-		color: colorr ;
-		borderColor: (scale scale: aPreciseMemoryNode memoryUsed);
-		@ (RSPopup text: aPreciseMemoryNode longDescription);
-		yourself).
-	box border width: 2.
-	boxes add: box.
-	^ box
+	| outterBox allocDict |
+	outterBox := RSGroup new.
+	allocDict := aPreciseMemoryNode allocationDict.
+	allocDict keysDo: [ :class | | entry innerBox |
+		entry := allocDict at: class.
+		(entry directAllocations > 0) ifTrue: [ 
+			innerBox := (RSBox new
+				size: 10;
+				color: ( self colorFor: class );
+				@ (RSPopup text: 'TODO');
+				yourself).
+			outterBox add: innerBox.]].
+	outterBox := outterBox asShape.
+	outterBox padding: 3;
+		color: (scale scale: aPreciseMemoryNode memoryUsed);
+		@ (RSPopup text: aPreciseMemoryNode longDescription).
+	boxes add: outterBox.
+	^ outterBox
 ]
 
 { #category : #display }
@@ -80,7 +90,7 @@ PreciseMemoryPresenter >> initializeWith: aPreciseMemoryInterpreter [
 		domain: { 0 . maxMemory }.
 ]
 
-{ #category : #calculating }
+{ #category : #utilities }
 PreciseMemoryPresenter >> lineWidthFor: aNode [
 	" Function that associates to a node the width of the line that connects it to its parent
 	in the presenter. Will probably be modified later "

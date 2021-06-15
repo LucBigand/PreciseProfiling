@@ -17,6 +17,11 @@ PreciseMemoryNode >> addAllocation: anObject [
 	allocationDict addAllocation: anObject.
 ]
 
+{ #category : #accessing }
+PreciseMemoryNode >> allocationDict [
+	^ allocationDict get
+]
+
 { #category : #printing }
 PreciseMemoryNode >> description [
 	method ifNil: [ ^ '' ].

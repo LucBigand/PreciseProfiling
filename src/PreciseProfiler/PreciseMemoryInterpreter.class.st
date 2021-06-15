@@ -4,6 +4,11 @@ Class {
 	#category : #PreciseProfiler
 }
 
+{ #category : #display }
+PreciseMemoryInterpreter >> display [
+	^ PreciseMemoryPresenter openOn: self
+]
+
 { #category : #initialization }
 PreciseMemoryInterpreter >> initialize [
 	super initialize.
