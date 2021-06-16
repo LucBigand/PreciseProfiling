@@ -93,6 +93,7 @@ PreciseMemoryPresenter >> createBoxFor: aPreciseMemoryNode [
 				@ (RSPopup text: (entry directAllocations asString,' allocations of ', class asString ));
 				yourself).
 			outterBox add: innerBox.]].
+	RSGridLayout on: outterBox.
 	outterBox := outterBox asShape.
 	outterBox padding: 3;
 		color: (scale scale: aPreciseMemoryNode memoryUsed);
@@ -154,5 +155,5 @@ PreciseMemoryPresenter >> lineWidthFor: aNode [
 PreciseMemoryPresenter >> sizeInnerBoxFor: anInteger [
 	" Function that associates to a number of allocations the size of the inner box representing these
 	allocations within the method context in the presenter. Will probably be modified later "
-	^ 2 + (8 * anInteger / maxNumberOfAllocations)
+	^ 4 + (8 * anInteger / maxNumberOfAllocations)
 ]
