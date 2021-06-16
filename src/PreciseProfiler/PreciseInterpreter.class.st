@@ -77,7 +77,6 @@ PreciseInterpreter >> runOn: aReceiver method: aSelector andArguments: args [
 	ast := (lookupClass >> aSelector) parseTree.
 	self registerMethodCall: (lookupClass >> aSelector).
 	res := self execute: ast withReceiver: aReceiver andArguments: args.
-	self rootNode computeMaxNumberOfCall.
 	^ res
 ]
 

@@ -5,7 +5,9 @@ Class {
 		'scale',
 		'interpreter',
 		'colorDictionary',
-		'boxes'
+		'boxes',
+		'maxNumberOfCalls',
+		'maxNumberOfAllocations'
 	],
 	#category : #PreciseProfiler
 }
@@ -18,6 +20,31 @@ PreciseMemoryPresenter class >> openOn: aPreciseMemoryInterpreter [
 		open.
 ]
 
+{ #category : #computing }
+PreciseMemoryPresenter >> auxComputeMaxNumberOfAllocations: aPreciseMemoryNode [
+	| res nbAllocPerClass |
+	nbAllocPerClass := (aPreciseMemoryNode allocationDict values collect: [ :entry | entry directAllocations ]).
+	res := nbAllocPerClass 
+		ifEmpty: [ 0 ]
+		ifNotEmpty: [ nbAllocPerClass max ].
+	aPreciseMemoryNode childs do: [ :child | | childMNOA |
+		childMNOA := self auxComputeMaxNumberOfAllocations: child.
+		(childMNOA > res) 
+			ifTrue: [ res := childMNOA ] ].
+	^ res
+]
+
+{ #category : #computing }
+PreciseMemoryPresenter >> auxComputeMaxNumberOfCall: aPreciseMemoryNode [
+	| res |
+	res := aPreciseMemoryNode numberOfCalls.
+	aPreciseMemoryNode childs do: [ :child | | childMNOC |
+		childMNOC := self auxComputeMaxNumberOfCall: child.
+		(childMNOC > res) 
+			ifTrue: [ res := childMNOC ] ].
+	^ res
+]
+
 { #category : #utilities }
 PreciseMemoryPresenter >> colorFor: aClass [
 	(colorDictionary includesKey: aClass)
@@ -26,6 +53,30 @@ PreciseMemoryPresenter >> colorFor: aClass [
 			newColor := Color random.
 			colorDictionary at: aClass put: newColor.
 			^ newColor ].
+]
+
+{ #category : #computing }
+PreciseMemoryPresenter >> computeMaxNumberOfAllocations [
+	" Compute the maximum number of calls for allocations of the same object for a method context "
+	| res |
+	res := 0.
+	interpreter rootNode childs do: [ :child | | childMNOA |
+		childMNOA := self auxComputeMaxNumberOfAllocations: child.
+		(childMNOA > res) 
+			ifTrue: [ res := childMNOA ] ].
+	maxNumberOfAllocations := res.
+]
+
+{ #category : #computing }
+PreciseMemoryPresenter >> computeMaxNumberOfCall [
+	" Compute the maximum number of calls for a method context "
+	| res |
+	res := 0.
+	interpreter rootNode childs do: [ :child | | childMNOC |
+		childMNOC := self auxComputeMaxNumberOfCall: child.
+		(childMNOC > res) 
+			ifTrue: [ res := childMNOC ] ].
+	maxNumberOfCalls := res.
 ]
 
 { #category : #display }
@@ -37,7 +88,7 @@ PreciseMemoryPresenter >> createBoxFor: aPreciseMemoryNode [
 		entry := allocDict at: class.
 		(entry directAllocations > 0) ifTrue: [ 
 			innerBox := (RSBox new
-				size: 10;
+				size: (self sizeInnerBoxFor: entry directAllocations) ;
 				color: ( self colorFor: class );
 				@ (RSPopup text: (entry directAllocations asString,' allocations of ', class asString ));
 				yourself).
@@ -88,11 +139,20 @@ PreciseMemoryPresenter >> initializeWith: aPreciseMemoryInterpreter [
 	scale := NSScale linear
 		range: { Color blue . Color red }; 
 		domain: { 0 . maxMemory }.
+	self computeMaxNumberOfCall.
+	self computeMaxNumberOfAllocations.
 ]
 
 { #category : #utilities }
 PreciseMemoryPresenter >> lineWidthFor: aNode [
 	" Function that associates to a node the width of the line that connects it to its parent
 	in the presenter. Will probably be modified later "
-	^ 3 * aNode numberOfCalls / interpreter rootNode maxNumberOfCalls
+	^ 3 * aNode numberOfCalls / maxNumberOfCalls
+]
+
+{ #category : #utilities }
+PreciseMemoryPresenter >> sizeInnerBoxFor: anInteger [
+	" Function that associates to a number of allocations the size of the inner box representing these
+	allocations within the method context in the presenter. Will probably be modified later "
+	^ 2 + (8 * anInteger / maxNumberOfAllocations)
 ]
