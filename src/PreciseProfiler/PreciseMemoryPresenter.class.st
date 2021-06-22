@@ -90,6 +90,15 @@ PreciseMemoryPresenter >> centerNodesToTheLeft [
 	self zoomToFit.
 ]
 
+{ #category : #display }
+PreciseMemoryPresenter >> colorBoxes [
+	"Makes all boxes and edges non translucent"
+	boxes do: [ :box |
+		box color: box color asNontranslucentColor.
+		box children do: [ :child | child color: child color asNontranslucentColor ] ].
+	edges do: [ :edge | edge color: edge color asNontranslucentColor ].
+]
+
 { #category : #utilities }
 PreciseMemoryPresenter >> colorFor: aClass [
 	"Returns the color associated with aClass"
@@ -249,13 +258,15 @@ PreciseMemoryPresenter >> openWithTitle: aTitleAsString [
 { #category : #display }
 PreciseMemoryPresenter >> shadeBoxes: aClass [
 	"Shades all the boxes that directly or indirectly instantiate aClass"
+	self colorBoxes.
 	boxes do: [ :box |
 		((box propertyAt: #classes) includes: aClass)
 		ifFalse: [ 
 			box color: box color translucent.
 			box children do: [ :child | child color: child color translucent ] ] ].
 	edges do: [ :edge |
-		(edge to color isTranslucent ifTrue: [ edge color: edge color translucent ] ) ]
+		(edge to color isTranslucent ifTrue: [ edge color: edge color translucent ] ) ].
+	self signalUpdate
 ]
 
 { #category : #utilities }
