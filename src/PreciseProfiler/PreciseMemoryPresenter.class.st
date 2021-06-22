@@ -43,10 +43,9 @@ PreciseMemoryPresenter class >> initialize [
 { #category : #opening }
 PreciseMemoryPresenter class >> openOn: aPreciseMemoryInterpreter [
 	self new
+		openWithTitle: 'Memory profiler presenter';
 		initializeWith: aPreciseMemoryInterpreter;
-		displayNodes;
-		"displayClassList ;"
-		openWithTitle: 'Memory profiler presenter'.
+		display.
 ]
 
 { #category : #computing }
@@ -78,7 +77,7 @@ PreciseMemoryPresenter >> auxComputeMaxNumberOfCall: aPreciseMemoryNode [
 
 { #category : #display }
 PreciseMemoryPresenter >> centerNodesToTheLeft [
-	"Makes the nodes take the left portion of the presenter (Does'nt work yet"
+	"Makes the nodes take the left portion of the presenter (Does'nt work yet, will possibly be deleted)"
 	"| newScale newPosition cornerX cornerY |
 	cornerX := (boxes collect: [ :box | box matrix x + box baseRectangle corner x ]) max.
 	cornerY := (boxes collect: [ :box | box matrix y + box baseRectangle corner y ]) max.
@@ -144,8 +143,8 @@ PreciseMemoryPresenter >> createBoxFor: aPreciseMemoryNode [
 	RSGridLayout on: outterBox.
 	outterBox := outterBox asShape.
 	outterBox padding: 3;
-		propertyAt: #method put: aPreciseMemoryNode method;
-		color: (scale scale: aPreciseMemoryNode memoryUsed);
+		propertyAt: #classes put: aPreciseMemoryNode allocationDict keys;
+		color: (scale scale: aPreciseMemoryNode memoryUsed) ;
 		@ (RSPopup text: aPreciseMemoryNode longDescription);
 		@ (RSMenuActivable new menuDo: [ :menu :element | 
 			menu add: 'Inspect' target: aPreciseMemoryNode selector: #inspect;
@@ -155,8 +154,18 @@ PreciseMemoryPresenter >> createBoxFor: aPreciseMemoryNode [
 ]
 
 { #category : #display }
+PreciseMemoryPresenter >> display [
+	self displayNodes ;
+		zoomToFit;
+		displayClassList.
+	RSHorizontalLineLayout new
+		applyOn: { boxes . classList }.
+	"self zoomToFit."
+]
+
+{ #category : #display }
 PreciseMemoryPresenter >> displayClassList [
-	"Displays the list of all classes instanciated by the program executed by the PreciseMemoryInterpreter"
+	"Creates and displays the list of all classes instanciated by the program executed by the PreciseMemoryInterpreter"
 	| allocationDict keys |
 	allocationDict := interpreter rootNode childs first allocationDict.
 	interpreter rootNode childs allButFirstDo: [ :memoryNode | | allocationDict2 |
@@ -169,7 +178,9 @@ PreciseMemoryPresenter >> displayClassList [
 		nbAlloc := entry totalAllocations asString .
 		memoryUsed := entry totalMemoryUsed asString .
 		label := RSLabel text: class asString , ' - ' , nbAlloc , ' - ', memoryUsed , ' bytes' .
-		label color: Color black.
+		label color: Color black;
+			@ (RSMenuActivable new menuDo: [ :menu :element | 
+				menu add: 'Shade' target: self selector: #shadeBoxes: argument: class ]).
 		classList add: label ].
 	self addAll: classList.
 	RSVerticalLineLayout on: classList.
@@ -198,15 +209,15 @@ PreciseMemoryPresenter >> displayNodes [
 	interpreter rootNode childs do: [ :node | self displayNode: node].
 	self addAll: boxes.
 	RSHorizontalTreeLayout on: boxes.
-	self centerNodesToTheLeft.
+	"self centerNodesToTheLeft."
 ]
 
 { #category : #initialization }
 PreciseMemoryPresenter >> initialize [
 	super initialize.
 	colorDictionary := Dictionary new.
-	boxes := OrderedCollection new.
-	classList := OrderedCollection new.
+	boxes := RSGroup new.
+	classList := RSGroup new.
 ]
 
 { #category : #initialization }
@@ -233,6 +244,18 @@ PreciseMemoryPresenter >> openWithTitle: aTitleAsString [
 	| window |
 	window := super openWithTitle: aTitleAsString.
 	window extent: windowLength @ windowHeight .
+]
+
+{ #category : #display }
+PreciseMemoryPresenter >> shadeBoxes: aClass [
+	"Shades all the boxes that directly or indirectly instantiate aClass"
+	boxes do: [ :box |
+		((box propertyAt: #classes) includes: aClass)
+		ifFalse: [ 
+			box color: box color translucent.
+			box children do: [ :child | child color: child color translucent ] ] ].
+	edges do: [ :edge |
+		(edge to color isTranslucent ifTrue: [ edge color: edge color translucent ] ) ]
 ]
 
 { #category : #utilities }
