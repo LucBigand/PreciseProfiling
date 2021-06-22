@@ -1,5 +1,14 @@
+"
+I offer a visual display for the informations registered by a PreciseInterpreter, more precisely a tree of method contexts and a list of all methods called in descending order of number of calls.
+
+    Instance Variables
+	code:		A ByteString, equal to the code of the method selected
+	codePresenter:		A SpTextPresenter, used to display the code
+	interpreter:		The PreciseInterpreter whose informations are being displayed
+	mainPresenter:		A SpNotebook, with two pages : One for the tree of method contexts and the other for the list of all method called
+"
 Class {
-	#name : #PreciseInterpreterDisplay,
+	#name : #PreciseInterpreterPresenter,
 	#superclass : #SpPresenter,
 	#instVars : [
 		'interpreter',
@@ -11,7 +20,7 @@ Class {
 }
 
 { #category : #specs }
-PreciseInterpreterDisplay class >> defaultLayout [
+PreciseInterpreterPresenter class >> defaultLayout [
 	^ SpBoxLayout newVertical
 		add: #mainPresenter;
 		add: #codePresenter;
@@ -19,12 +28,12 @@ PreciseInterpreterDisplay class >> defaultLayout [
 ]
 
 { #category : #specs }
-PreciseInterpreterDisplay class >> defaultSpec [ 
+PreciseInterpreterPresenter class >> defaultSpec [ 
 	^ self defaultLayout
 ]
 
 { #category : #opening }
-PreciseInterpreterDisplay class >> openOn: aPreciseInterpreter [
+PreciseInterpreterPresenter class >> openOn: aPreciseInterpreter [
 	^ self basicNew
 		interpreter: aPreciseInterpreter;
 		initialize;
@@ -32,12 +41,13 @@ PreciseInterpreterDisplay class >> openOn: aPreciseInterpreter [
 ]
 
 { #category : #accessing }
-PreciseInterpreterDisplay >> codePresenter [
+PreciseInterpreterPresenter >> codePresenter [
 	^ codePresenter
 ]
 
 { #category : #initialization }
-PreciseInterpreterDisplay >> initializeListPage [
+PreciseInterpreterPresenter >> initializeListPage [
+	"Initialize the page with the list of all methods called, with a contextual menu used to inspect the associated PreciseNode or to open the method in the browser"
 	| listTemp |
 	listTemp := self newList
 		items: interpreter methodList associations;
@@ -69,7 +79,7 @@ PreciseInterpreterDisplay >> initializeListPage [
 ]
 
 { #category : #initialization }
-PreciseInterpreterDisplay >> initializePresenter [
+PreciseInterpreterPresenter >> initializePresenter [
 	code := ''.
 	mainPresenter := self newNotebook
 		addPageTitle: 'Method tree' provider: self initializeTreePage;
@@ -82,7 +92,8 @@ PreciseInterpreterDisplay >> initializePresenter [
 ]
 
 { #category : #initialization }
-PreciseInterpreterDisplay >> initializeTreePage [
+PreciseInterpreterPresenter >> initializeTreePage [
+	"Initialize the page with the tree of methods contexts, with a contextual menu used to inspect the associated PreciseNode or to open the method in the browser"
 	| treeTemp |
 	treeTemp := self newTree
 		roots: interpreter rootNode childs;
@@ -109,7 +120,7 @@ PreciseInterpreterDisplay >> initializeTreePage [
 ]
 
 { #category : #initialization }
-PreciseInterpreterDisplay >> initializeWindow: aWindowPresenter [
+PreciseInterpreterPresenter >> initializeWindow: aWindowPresenter [
 	
 	aWindowPresenter
 		title: 'Precise Profiler Display';
@@ -117,21 +128,21 @@ PreciseInterpreterDisplay >> initializeWindow: aWindowPresenter [
 ]
 
 { #category : #setting }
-PreciseInterpreterDisplay >> interpreter: aPreciseInterpreter [
+PreciseInterpreterPresenter >> interpreter: aPreciseInterpreter [
 	interpreter := aPreciseInterpreter
 ]
 
 { #category : #accessing }
-PreciseInterpreterDisplay >> mainPresenter [
+PreciseInterpreterPresenter >> mainPresenter [
 	^ mainPresenter
 ]
 
 { #category : #updating }
-PreciseInterpreterDisplay >> updateCodePresenter [
+PreciseInterpreterPresenter >> updateCodePresenter [
 	codePresenter text: code
 ]
 
 { #category : #updating }
-PreciseInterpreterDisplay >> updatePresenter [
+PreciseInterpreterPresenter >> updatePresenter [
 	self updateCodePresenter
 ]

@@ -1,3 +1,12 @@
+"
+I am a type of PreciseNode that also registers informations pertaining to the objects that my associated method has allocated : their class, number, and memory used.
+
+    Instance Variables
+	allocationDict:		An AllocationDictionary
+	memoryUsed:		An integer, represents the total amount of memory used in bytes (only among directly allocated objects before updated, and among all allocated objects after).
+	numberOfAllocations:		An integer, represents the total amount of allocations done (only among directly allocated objects before updated, and among all allocated objects after).
+	updated:		A boolean, false before this node has been updated and true after
+"
 Class {
 	#name : #PreciseMemoryNode,
 	#superclass : #PreciseNode,
@@ -12,6 +21,7 @@ Class {
 
 { #category : #adding }
 PreciseMemoryNode >> addAllocation: anObject [
+	"Register the allocation of anObject as though it was directly instantiated in this context call"
 	memoryUsed := memoryUsed + anObject sizeInMemory.
 	numberOfAllocations := numberOfAllocations + 1.
 	allocationDict addAllocation: anObject.
@@ -41,6 +51,7 @@ PreciseMemoryNode >> initialize [
 
 { #category : #printing }
 PreciseMemoryNode >> longDescription [
+	"Returns a string that contains information related to the classes, number and used memory of allocated object within this method context"
 	| res |
 	method ifNil: [ ^ '' ].
 	res := '<' , method classBinding value asString, '>>', method selector asString, '>', String cr,
@@ -64,7 +75,7 @@ PreciseMemoryNode >> numberOfAllocations [
 
 { #category : #updating }
 PreciseMemoryNode >> update [
-
+	"Update the number of allocations, memory used and allocation dictionary to include indirectly allocated object"
 	updated ifTrue: [ ^ self ].
 	self updateNumberOfAllocations;
 		updateMemoryUsed;
@@ -74,6 +85,7 @@ PreciseMemoryNode >> update [
 
 { #category : #updating }
 PreciseMemoryNode >> updateAllocationDict [
+	"Update the allocation dictionary to include indirectly allocated object"
 	childs do: [ :child | 
 		allocationDict addFromDictionary: child updateAllocationDict ].
 	^ allocationDict
@@ -81,6 +93,7 @@ PreciseMemoryNode >> updateAllocationDict [
 
 { #category : #updating }
 PreciseMemoryNode >> updateMemoryUsed [
+	"Update the memory used to include indirectly allocated object"
 	childs do: [ :child | 
 		memoryUsed := memoryUsed + child updateMemoryUsed ].
 	^ memoryUsed
@@ -89,6 +102,7 @@ PreciseMemoryNode >> updateMemoryUsed [
 
 { #category : #updating }
 PreciseMemoryNode >> updateNumberOfAllocations [
+	"Update the number of allocations to include indirectly allocated object"
 	childs do: [ :child | 
 		numberOfAllocations := numberOfAllocations + child updateNumberOfAllocations ].
 	^ numberOfAllocations

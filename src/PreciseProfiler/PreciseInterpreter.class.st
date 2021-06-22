@@ -1,3 +1,11 @@
+"
+I am an ast interpreter that keeps a trace of all the method contexts with a tree of nodes composed of a PreciseRoot and instances of PreciseNode.
+
+    Instance Variables
+	currentNode:		The node corresponding to the method context currently visited. Returns the PreciseRoot once the tree has been computed
+	methodList:		A list of all the methods called
+	nextNode:		The calling context that will potentially be visited next (private)
+"
 Class {
 	#name : #PreciseInterpreter,
 	#superclass : #CHInterpreter,
@@ -11,12 +19,14 @@ Class {
 
 { #category : #running }
 PreciseInterpreter >> class: aClass hasMethod: aSelector [
+	"A utility function. Verifies that aClass has among its method selectors aSelector"
 	^ (aClass methods collect: [ :each | each selector ]) includes: aSelector.
 ]
 
 { #category : #display }
 PreciseInterpreter >> display [
-	^ PreciseInterpreterDisplay openOn: self
+	"Open this interpreter and associated tree node in a PreciseInterpreterPresenter"
+	^ PreciseInterpreterPresenter openOn: self
 ]
 
 { #category : #initialization }
@@ -45,6 +55,7 @@ PreciseInterpreter >> pushNewFrame [
 
 { #category : #visiting }
 PreciseInterpreter >> registerMethodCall: aCompiledMethod [
+	"Register the method call within the node tree"
 	| method |
 	method := (aCompiledMethod classBinding value == CHBlock)
 		ifTrue: [ FullBlockClosure >> (aCompiledMethod selector) ] 
@@ -58,7 +69,6 @@ PreciseInterpreter >> registerMethodCall: aCompiledMethod [
 
 { #category : #accessing }
 PreciseInterpreter >> rootNode [
-	"Should only be called by other classes"
 	^ currentNode
 ]
 
@@ -70,6 +80,8 @@ PreciseInterpreter >> runOn: aClass method: aSelector [
 
 { #category : #running }
 PreciseInterpreter >> runOn: aReceiver method: aSelector andArguments: args [
+	"Runs this interpreter on a program composed of aReveiver, aSelector, and arguments args
+	Example : The program '3 ** 5' is called with aReceiver = 3, aSelector = #**, and args = #(5)"
 	| ast lookupClass res |
 	lookupClass := aReceiver class.
 	[ (lookupClass isNotNil) and: (self class: lookupClass hasMethod: aSelector) not ] whileTrue: 

@@ -1,3 +1,11 @@
+"
+I am a concrete implementation of AbstractPreciseNode. I register a method and the number of time this method has been called within this method context.
+
+    Instance Variables
+	method:		The method called
+	numberOfCalls:		An integer, represents the number of times this method has been called within this method context
+	parent:		A PreciseNode associated with the method context in which this method has been called
+"
 Class {
 	#name : #PreciseNode,
 	#superclass : #AbstractPreciseNode,
