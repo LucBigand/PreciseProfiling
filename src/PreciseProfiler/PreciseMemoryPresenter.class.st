@@ -97,6 +97,7 @@ PreciseMemoryPresenter >> colorBoxes [
 		box color: box color asNontranslucentColor.
 		box children do: [ :child | child color: child color asNontranslucentColor ] ].
 	edges do: [ :edge | edge color: edge color asNontranslucentColor ].
+	self signalUpdate
 ]
 
 { #category : #utilities }
@@ -153,6 +154,7 @@ PreciseMemoryPresenter >> createBoxFor: aPreciseMemoryNode [
 	outterBox := outterBox asShape.
 	outterBox padding: 3;
 		propertyAt: #classes put: aPreciseMemoryNode allocationDict keys;
+		propertyAt: #hiddenInnerNodes put: Dictionary new;
 		color: (scale scale: aPreciseMemoryNode memoryUsed) ;
 		@ (RSPopup text: aPreciseMemoryNode longDescription);
 		@ (RSMenuActivable new menuDo: [ :menu :element | 
@@ -160,6 +162,21 @@ PreciseMemoryPresenter >> createBoxFor: aPreciseMemoryNode [
 				add: 'Browse' target: aPreciseMemoryNode method selector: #browse ]).
 	boxes add: outterBox.
 	^ outterBox
+]
+
+{ #category : #display }
+PreciseMemoryPresenter >> createClassListItemFor: aClass entry: anAllocationEntry [
+	| nbAlloc memoryUsed label |
+	nbAlloc := anAllocationEntry totalAllocations asString .
+	memoryUsed := anAllocationEntry totalMemoryUsed asString .
+	label := RSLabel text: aClass asString , ' - ' , nbAlloc , ' - ', memoryUsed , ' bytes' .
+	label color: Color black;
+		when: RSMouseEnter do: [ :evt | self shadeBoxes: aClass ];
+		when: RSMouseLeave do: [ :evt | self colorBoxes ] .
+	"@ RSMouseEnter new "
+	"@ (RSMenuActivable new menuDo: [ :menu :element | 
+		menu add: 'Shade' target: self selector: #shadeBoxes: argument: aClass ])."
+	^ label
 ]
 
 { #category : #display }
@@ -182,17 +199,13 @@ PreciseMemoryPresenter >> displayClassList [
 		allocationDict addFromDictionary: allocationDict2 ].
 	keys := allocationDict keys sorted: [ :a :b |
 		(allocationDict at: a) totalAllocations > (allocationDict at: b) totalAllocations ].
-	keys do: [ :class | | entry nbAlloc memoryUsed label |
+	keys do: [ :class | | entry |
 		entry := allocationDict at: class.
-		nbAlloc := entry totalAllocations asString .
-		memoryUsed := entry totalMemoryUsed asString .
-		label := RSLabel text: class asString , ' - ' , nbAlloc , ' - ', memoryUsed , ' bytes' .
-		label color: Color black;
-			@ (RSMenuActivable new menuDo: [ :menu :element | 
-				menu add: 'Shade' target: self selector: #shadeBoxes: argument: class ]).
-		classList add: label ].
+		classList add: (self createClassListItemFor: class entry: entry )].
 	self addAll: classList.
-	RSVerticalLineLayout on: classList.
+	RSVerticalLineLayout new
+		gapSize: 0; 
+		applyOn: classList.
 	
 ]
 
@@ -219,6 +232,12 @@ PreciseMemoryPresenter >> displayNodes [
 	self addAll: boxes.
 	RSHorizontalTreeLayout on: boxes.
 	"self centerNodesToTheLeft."
+]
+
+{ #category : #display }
+PreciseMemoryPresenter >> excludeClass: aClass [
+	"Hide the inner nodes that represent instanciation of a class"
+	
 ]
 
 { #category : #initialization }
