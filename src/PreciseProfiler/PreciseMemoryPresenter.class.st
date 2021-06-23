@@ -173,10 +173,16 @@ PreciseMemoryPresenter >> createClassListItemFor: aClass entry: anAllocationEntr
 	memoryUsed := anAllocationEntry totalMemoryUsed asString .
 	label := RSLabel text: aClass asString , ' - ' , nbAlloc , ' - ', memoryUsed , ' bytes' .
 	label color: Color black;
+		propertyAt: #hidden put: false;
 		when: RSMouseEnter do: [ :evt | self shadeBoxes: aClass ];
 		when: RSMouseLeave do: [ :evt | self colorBoxes ] ;
-		when: RSMouseClick do: [ :evt |
-			self excludeClass: aClass ].
+		when: RSMouseClick do: [ :evt | | hidden |
+			hidden := label propertyAt: #hidden.
+			hidden
+				ifTrue: [ self includeClass: aClass ] 
+				ifFalse: [ self excludeClass: aClass ].
+			label propertyAt: #hidden put: hidden not.
+			label color: label color reverseTranslucence ].
 	^ label
 ]
 
@@ -242,6 +248,22 @@ PreciseMemoryPresenter >> excludeClass: aClass [
 		nodesToHide := box children select: [ :node | (node propertyAt: #class) == aClass ].
 		(box propertyAt: #hiddenInnerNodes) addAll: nodesToHide.
 		box children removeAll: nodesToHide.
+		box adjustToChildren;
+			padding: 3.
+	].
+	RSHorizontalTreeLayout on: boxes.
+	self signalUpdate.
+]
+
+{ #category : #display }
+PreciseMemoryPresenter >> includeClass: aClass [
+	"Show the inner nodes that represent instanciation of a class"
+	boxes do: [ :box | | nodesToShow |
+		nodesToShow := (box propertyAt: #hiddenInnerNodes)
+			select: [ :node | (node propertyAt: #class) == aClass ].
+		box children addAll: nodesToShow.
+		(box propertyAt: #hiddenInnerNodes) removeAll: nodesToShow.
+		RSGridLayout on: box children.
 		box adjustToChildren;
 			padding: 3.
 	].
