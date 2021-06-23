@@ -57,7 +57,17 @@ PreciseInterpreterTest >> testInterpreteFactorial5 [
 ]
 
 { #category : #test }
-PreciseInterpreterTest >> testInterpreteJavadoc [
+PreciseInterpreterTest >> testInterpreteJavadocClass [
+	self
+		assert: ((interpreter
+			runOn: Javadoc 
+			method: #runOnClass: 
+			andArguments: { SmallInteger })
+				beginsWith: 'Class : SmallInteger')
+]
+
+{ #category : #test }
+PreciseInterpreterTest >> testInterpreteJavadocPackage [
 	self
 		assert: ((interpreter
 			runOn: Javadoc 

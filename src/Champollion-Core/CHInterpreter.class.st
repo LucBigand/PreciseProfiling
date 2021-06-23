@@ -648,13 +648,18 @@ CHInterpreter >> visitSelfNode: aNode [
 
 { #category : #visiting }
 CHInterpreter >> visitSequenceNode: aNode [
+	| res |
 	(aNode statements size = 0)
 		ifTrue: [ ^ self homeFrame receiver ].
 	aNode temporaryNames
 		do: [ :each | self tempAt: each put: nil ].
 	aNode statements allButLast
 		do: [ :each | self visitNode: each ].
-	^ self visitNode: aNode statements last.
+	"^ self visitNode: aNode statements last."
+	res := self visitNode: aNode statements last.
+	(aNode statements last isAssignment and: aNode parent isMethod )
+		ifTrue: [ ^ self receiver ]
+		ifFalse: [ ^ res ]
 ]
 
 { #category : #visiting }
