@@ -157,7 +157,7 @@ PreciseMemoryPresenter >> createBoxFor: aPreciseMemoryNode [
 		propertyAt: #classes put: aPreciseMemoryNode allocationDict keys;
 		propertyAt: #hiddenInnerNodes put: OrderedCollection new;
 		color: (scale scale: aPreciseMemoryNode memoryUsed) ;
-		when: RSMouseClick do: [ :evt | aPreciseMemoryNode method browse ];
+		when: RSMouseLeftClick do: [ :evt | aPreciseMemoryNode method browse ];
 		@ (RSPopup text: aPreciseMemoryNode longDescription);
 		@ (RSMenuActivable new menuDo: [ :menu :element | 
 			menu add: 'Inspect' target: aPreciseMemoryNode selector: #inspect;
@@ -168,9 +168,10 @@ PreciseMemoryPresenter >> createBoxFor: aPreciseMemoryNode [
 
 { #category : #display }
 PreciseMemoryPresenter >> createClassListItemFor: aClass entry: anAllocationEntry [
-	| nbAlloc memoryUsed label |
+	| nbAlloc memoryUsed label box res |
 	nbAlloc := anAllocationEntry totalAllocations asString .
 	memoryUsed := anAllocationEntry totalMemoryUsed asString .
+	
 	label := RSLabel text: aClass asString , ' - ' , nbAlloc , ' - ', memoryUsed , ' bytes' .
 	label color: Color black;
 		propertyAt: #hidden put: false;
@@ -183,7 +184,24 @@ PreciseMemoryPresenter >> createClassListItemFor: aClass entry: anAllocationEntr
 				ifFalse: [ self excludeClass: aClass ].
 			label propertyAt: #hidden put: hidden not.
 			label color: label color reverseTranslucence ].
-	^ label
+		
+	box := RSBox new
+		color: (self colorFor: aClass );
+		width: 5;
+		height: 5;
+		withBorder;
+		yourself.
+	box border width: 1;
+		color: Color black.
+	
+	RSHorizontalLineLayout new
+		alignMiddle;
+		applyOn: { box . label }.
+	res := RSGroup new
+		addAll: { box . label };
+		yourself.
+	res := res asShape.
+	^ res
 ]
 
 { #category : #display }
