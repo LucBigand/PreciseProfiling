@@ -15,6 +15,17 @@ CHInterpreter >> argumentAt: anInteger [
 ]
 
 { #category : #utility }
+CHInterpreter >> assertFloatArgument [
+	| argument |
+	self numberOfArguments < 1
+		ifTrue: [ CHPrimitiveFail signal ].
+		
+	argument := self argumentAt: 1.
+	argument class = Float
+		ifFalse: [ CHPrimitiveFail signal ].
+]
+
+{ #category : #utility }
 CHInterpreter >> assertSmallIntegerReceiverAndArgument [
 	| receiver argument |
 	self numberOfArguments < 1
@@ -144,6 +155,7 @@ CHInterpreter >> initializePrimitiveTable [
 	primitives at: 14	put: #primitiveSmallIntegerBitAnd.
 	primitives at: 17	put: #primitiveSmallIntegerBitShift.
 	primitives at: 29	put: #primitiveSmallIntegerMultiply.
+	primitives at: 40	put: #primitiveAsFloat.
 	primitives at: 60	put: #primitiveAt.
 	primitives at: 61	put: #primitiveAtPut.
 	primitives at: 62	put: #primitiveSize.
@@ -152,6 +164,7 @@ CHInterpreter >> initializePrimitiveTable [
 	primitives at: 70	put: #primitiveBasicNew.
 	primitives at: 71	put: #primitiveBasicNewVariable.
 	primitives at: 75	put: #primitiveBasicIdentityHash.
+	primitives at: 83	put: #primitivePerformWith.
 	primitives at: 105	put: #primitiveReplaceFromToWithStartingAt.
 	primitives at: 110	put: #primitiveIdentical.
 	primitives at: 111	put: #primitiveClass.
@@ -163,6 +176,10 @@ CHInterpreter >> initializePrimitiveTable [
 	primitives at: 201	put: #primitiveBlockValue.
 	primitives at: 202	put: #primitiveBlockValueWithArg.
 	primitives at: 207	put: #primitiveBlockValue.
+	primitives at: 541	put: #primitiveFloatAdd.
+	primitives at: 549	put: #primitiveFloatMultiply.
+	primitives at: 554	put: #primitiveTimesTwoPower.
+	primitives at: 'primDigitBitShiftMagnitude' put: #primitiveDigitBitShiftMagnitude.
 	primitives at: 'primDigitMultiplyNegative' put: #primitiveDigitMultiplyNegative.
 	primitives at: 'primitiveCompareString' put: #primitiveCompareString .
 	primitives at: 'primitiveStringHash' put: #primitiveStringHash
@@ -198,6 +215,11 @@ CHInterpreter >> numberOfArguments [
 { #category : #setting }
 CHInterpreter >> popFrame [
 	stack pop.
+]
+
+{ #category : #primitives }
+CHInterpreter >> primitiveAsFloat [
+	^ self receiver asFloat
 ]
 
 { #category : #primitives }
@@ -293,12 +315,31 @@ CHInterpreter >> primitiveDifferent [
 ]
 
 { #category : #primitives }
+CHInterpreter >> primitiveDigitBitShiftMagnitude [
+	self numberOfArguments < 1
+		ifTrue: [ CHPrimitiveFail signal ].
+	^ self receiver bitShiftMagnitude: (self argumentAt: 1).
+]
+
+{ #category : #primitives }
 CHInterpreter >> primitiveDigitMultiplyNegative [
 	self numberOfArguments < 2
 		ifTrue: [ CHPrimitiveFail signal ].
 	^ self receiver
 		digitMultiply: (self argumentAt: 1)
 		neg: (self argumentAt: 2).
+]
+
+{ #category : #primitives }
+CHInterpreter >> primitiveFloatAdd [
+	self assertFloatArgument.
+	^ (self receiver) + (self argumentAt: 1).
+]
+
+{ #category : #primitives }
+CHInterpreter >> primitiveFloatMultiply [
+	self assertFloatArgument.
+	^ (self receiver) * (self argumentAt: 1).
 ]
 
 { #category : #primitives }
@@ -311,6 +352,15 @@ CHInterpreter >> primitiveIdentical [
 { #category : #primitives }
 CHInterpreter >> primitiveIsReadOnlyObject [
 	^ self receiver isReadOnlyObject
+]
+
+{ #category : #primitives }
+CHInterpreter >> primitivePerformWith [
+	self numberOfArguments < 2
+		ifTrue: [ CHPrimitiveFail signal ].
+	^ self receiver
+		perform: (self argumentAt: 1)
+		with: (self argumentAt: 2).
 ]
 
 { #category : #primitives }
@@ -441,6 +491,11 @@ CHInterpreter >> primitiveStringHash [
 	^ self receiver 
 		stringHash: (self argumentAt: 1)
 		initialHash: (self argumentAt: 2)
+]
+
+{ #category : #primitives }
+CHInterpreter >> primitiveTimesTwoPower [
+	^ (self receiver) timesTwoPower: (self argumentAt: 1).
 ]
 
 { #category : #primitives }
