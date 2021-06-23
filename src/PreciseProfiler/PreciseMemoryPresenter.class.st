@@ -147,6 +147,7 @@ PreciseMemoryPresenter >> createBoxFor: aPreciseMemoryNode [
 			innerBox := (RSBox new
 				size: (self sizeInnerBoxFor: entry directAllocations) ;
 				color: ( self colorFor: class );
+				propertyAt: #class put: class;
 				@ (RSPopup text: (entry directAllocations asString,' allocations of ', class asString ));
 				yourself).
 			outterBox add: innerBox.]].
@@ -154,8 +155,9 @@ PreciseMemoryPresenter >> createBoxFor: aPreciseMemoryNode [
 	outterBox := outterBox asShape.
 	outterBox padding: 3;
 		propertyAt: #classes put: aPreciseMemoryNode allocationDict keys;
-		propertyAt: #hiddenInnerNodes put: Dictionary new;
+		propertyAt: #hiddenInnerNodes put: OrderedCollection new;
 		color: (scale scale: aPreciseMemoryNode memoryUsed) ;
+		when: RSMouseClick do: [ :evt | aPreciseMemoryNode method browse ];
 		@ (RSPopup text: aPreciseMemoryNode longDescription);
 		@ (RSMenuActivable new menuDo: [ :menu :element | 
 			menu add: 'Inspect' target: aPreciseMemoryNode selector: #inspect;
@@ -172,10 +174,9 @@ PreciseMemoryPresenter >> createClassListItemFor: aClass entry: anAllocationEntr
 	label := RSLabel text: aClass asString , ' - ' , nbAlloc , ' - ', memoryUsed , ' bytes' .
 	label color: Color black;
 		when: RSMouseEnter do: [ :evt | self shadeBoxes: aClass ];
-		when: RSMouseLeave do: [ :evt | self colorBoxes ] .
-	"@ RSMouseEnter new "
-	"@ (RSMenuActivable new menuDo: [ :menu :element | 
-		menu add: 'Shade' target: self selector: #shadeBoxes: argument: aClass ])."
+		when: RSMouseLeave do: [ :evt | self colorBoxes ] ;
+		when: RSMouseClick do: [ :evt |
+			self excludeClass: aClass ].
 	^ label
 ]
 
@@ -237,7 +238,15 @@ PreciseMemoryPresenter >> displayNodes [
 { #category : #display }
 PreciseMemoryPresenter >> excludeClass: aClass [
 	"Hide the inner nodes that represent instanciation of a class"
-	
+	boxes do: [ :box | | nodesToHide |
+		nodesToHide := box children select: [ :node | (node propertyAt: #class) == aClass ].
+		(box propertyAt: #hiddenInnerNodes) addAll: nodesToHide.
+		box children removeAll: nodesToHide.
+		box adjustToChildren;
+			padding: 3.
+	].
+	RSHorizontalTreeLayout on: boxes.
+	self signalUpdate.
 ]
 
 { #category : #initialization }
