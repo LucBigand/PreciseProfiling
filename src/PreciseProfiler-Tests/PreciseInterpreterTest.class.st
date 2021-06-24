@@ -36,6 +36,13 @@ PreciseInterpreterTest >> testInterpreteCHInterpretableLastExpression [
 ]
 
 { #category : #test }
+PreciseInterpreterTest >> testInterpreteColorTranslucent [
+	self
+		assert: (interpreter runOn: Color red method: #translucent)
+		equals: Color red translucent.
+]
+
+{ #category : #test }
 PreciseInterpreterTest >> testInterpreteExponentiation [
 	self
 		assert: (interpreter runOn: 5 method: #** andArguments: #(3))

@@ -177,7 +177,10 @@ CHInterpreter >> initializePrimitiveTable [
 	primitives at: 202	put: #primitiveBlockValueWithArg.
 	primitives at: 207	put: #primitiveBlockValue.
 	primitives at: 541	put: #primitiveFloatAdd.
+	primitives at: 542	put: #primitiveFloatMinus.
+	primitives at: 547	put: #primitiveFloatEqualsThan.
 	primitives at: 549	put: #primitiveFloatMultiply.
+	primitives at: 550	put: #primitiveFloatDivide.
 	primitives at: 554	put: #primitiveTimesTwoPower.
 	primitives at: 'primDigitBitShiftMagnitude' put: #primitiveDigitBitShiftMagnitude.
 	primitives at: 'primDigitMultiplyNegative' put: #primitiveDigitMultiplyNegative.
@@ -334,6 +337,24 @@ CHInterpreter >> primitiveDigitMultiplyNegative [
 CHInterpreter >> primitiveFloatAdd [
 	self assertFloatArgument.
 	^ (self receiver) + (self argumentAt: 1).
+]
+
+{ #category : #primitives }
+CHInterpreter >> primitiveFloatDivide [
+	self assertFloatArgument.
+	^ (self receiver) / (self argumentAt: 1).
+]
+
+{ #category : #primitives }
+CHInterpreter >> primitiveFloatEqualsThan [
+	self assertFloatArgument.
+	^ (self receiver) = (self argumentAt: 1).
+]
+
+{ #category : #primitives }
+CHInterpreter >> primitiveFloatMinus [
+	self assertFloatArgument.
+	^ (self receiver) - (self argumentAt: 1).
 ]
 
 { #category : #primitives }
@@ -655,7 +676,6 @@ CHInterpreter >> visitSequenceNode: aNode [
 		do: [ :each | self tempAt: each put: nil ].
 	aNode statements allButLast
 		do: [ :each | self visitNode: each ].
-	"^ self visitNode: aNode statements last."
 	res := self visitNode: aNode statements last.
 	(aNode statements last isAssignment and: aNode parent isMethod )
 		ifTrue: [ ^ self receiver ]
