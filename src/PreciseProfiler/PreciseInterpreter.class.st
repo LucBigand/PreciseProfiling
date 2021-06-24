@@ -43,8 +43,15 @@ PreciseInterpreter >> methodList [
 
 { #category : #setting }
 PreciseInterpreter >> popFrame [
-	currentNode := currentNode parent.
+	(self topFrame includesKey: #__definingContext)
+		ifFalse: [ currentNode := currentNode parent].
 	^ super popFrame.
+]
+
+{ #category : #primitives }
+PreciseInterpreter >> primitiveBlockValue [
+	currentNode := currentNode parent.
+	^ super primitiveBlockValue.
 ]
 
 { #category : #setting }
