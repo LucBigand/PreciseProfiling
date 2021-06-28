@@ -3,7 +3,7 @@ Class {
 	#superclass : #CHInterpreter,
 	#instVars : [
 		'packageSpies',
-		'currentMethod'
+		'methodCalls'
 	],
 	#category : #'PreciseProfiler - Spy'
 }
@@ -31,6 +31,7 @@ CodeProfiler >> classSpyAt: aClass [
 CodeProfiler >> initialize [
 	super initialize.
 	packageSpies := Dictionary new.
+	methodCalls := CTStack new.
 ]
 
 { #category : #accessing }
@@ -69,13 +70,37 @@ CodeProfiler >> packageSpyAt: aPackage [
 	^ packageSpies at: aPackage
 ]
 
+{ #category : #registering }
+CodeProfiler >> registerMethodCall: aCompiledMethod fromReceiver: anObject [
+	| method previousMethod packages |
+	method := (aCompiledMethod classBinding value == CHBlock)
+		ifTrue: [ FullBlockClosure >> (aCompiledMethod selector) ] 
+		ifFalse: [ aCompiledMethod ].
+	previousMethod := methodCalls 
+		ifEmpty: [ nil ]
+		ifNotEmpty:  [ methodCalls top ].
+	methodCalls push: method.
+	packages := packageSpies keys.
+	(packages includes: method package) ifFalse: [ ^ self ].
+	previousMethod ifNil: [ 
+		(self methodSpyAt: method) incrementNumberOfCalls.
+		^ self ].
+	(packages includes: previousMethod package)
+		ifTrue: [ 
+			(self methodSpyAt: previousMethod) registerOutgoingCall: method.
+			(self methodSpyAt: method) registerIncomingCall: previousMethod fromReceiver: anObject ] 
+		ifFalse: [ (self methodSpyAt: method) incrementNumberOfCalls ]
+]
+
 { #category : #visiting }
 CodeProfiler >> visitMessageNode: aNode [
-	| dict |
+	| dict result |
 	dict := self auxVisitMessageNode: aNode.
-	currentMethod := (dict at: 'method').
-	^ self 
+	self registerMethodCall: (dict at: 'method') fromReceiver: (dict at: 'receiver').
+	result := self 
 		execute: ((dict at: 'method') ast)
 		withReceiver: (dict at: 'receiver')
 		andArguments: (dict at: 'args').
+	methodCalls pop.
+	^ result
 ]
