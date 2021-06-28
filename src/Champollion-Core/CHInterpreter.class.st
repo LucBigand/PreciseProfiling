@@ -292,7 +292,14 @@ CHInterpreter >> primitiveBlockValue [
 
 { #category : #primitives }
 CHInterpreter >> primitiveBlockValueWithArg [
-	self halt.
+	| sequenceNode theBlock |
+	theBlock := self receiver.
+	sequenceNode := theBlock code body.
+	self receiver: (theBlock definingContext read: #self).
+	self tempAt: #__definingContext put: theBlock definingContext. 
+	sequenceNode temporaryNames do: [ :e | self tempAt: e put: nil ].
+	self tempAt: (theBlock code arguments at: 1) name put: (self argumentAt: 1).
+	^ self visitNode: sequenceNode.
 ]
 
 { #category : #primitives }

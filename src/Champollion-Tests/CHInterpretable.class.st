@@ -172,6 +172,11 @@ CHInterpretable >> returnRecursiveLiteralArray [
 ]
 
 { #category : #return }
+CHInterpretable >> returnResultOfBlockWithArgument [
+	^ #(1 2 3) collect: [ :each | 2 * each ]
+]
+
+{ #category : #return }
 CHInterpretable >> returnSelf [
 	^ self
 ]

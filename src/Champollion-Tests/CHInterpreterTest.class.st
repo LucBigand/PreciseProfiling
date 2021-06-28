@@ -225,6 +225,13 @@ CHInterpreterTest >> testReturnRecursiveLiteralArray [
 ]
 
 { #category : #'tests - return' }
+CHInterpreterTest >> testReturnResultOfBlockWithArgument [
+	self
+		assert: (self executeSelector: #returnResultOfBlockWithArgument)
+		equals: #(2 4 6).
+]
+
+{ #category : #'tests - return' }
 CHInterpreterTest >> testReturnSelf [
 	self
 		assert: (self executeSelector: #returnSelf)
