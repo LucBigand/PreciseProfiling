@@ -12,3 +12,8 @@ ClassSpy >> initializeWith: aClass [
 	super initializeWith: aClass.
 	metaclassSpy := (MetaclassSpy new initializeWith: aClass class)
 ]
+
+{ #category : #accessing }
+ClassSpy >> metaclassSpy [
+	^ metaclassSpy
+]

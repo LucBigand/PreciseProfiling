@@ -17,6 +17,16 @@ PackageSpy >> addClass: aClass [
 	^ classSpy
 ]
 
+{ #category : #accessing }
+PackageSpy >> classSpies [
+	^ classSpies values 
+]
+
+{ #category : #accessing }
+PackageSpy >> classSpyAt: aClass [
+	^ classSpies at: aClass
+]
+
 { #category : #initialization }
 PackageSpy >> initialize [
 	super initialize.

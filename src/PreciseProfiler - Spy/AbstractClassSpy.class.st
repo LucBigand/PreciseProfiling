@@ -24,7 +24,22 @@ AbstractClassSpy >> initializeWith: aClass [
 	aClass methods do: [ :method | self addMethod: method ]
 ]
 
+{ #category : #accessing }
+AbstractClassSpy >> methodSpies [
+	^ methodSpies values 
+]
+
+{ #category : #accessing }
+AbstractClassSpy >> methodSpyAt: aMethod [
+	^ methodSpies at: aMethod
+]
+
 { #category : #setting }
 AbstractClassSpy >> setSuperclassSpy: aClassSpy [
 	superclassSpy := aClassSpy
+]
+
+{ #category : #accessing }
+AbstractClassSpy >> superclassSpy [
+	^ superclassSpy
 ]

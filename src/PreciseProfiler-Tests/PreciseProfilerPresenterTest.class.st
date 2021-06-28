@@ -1,5 +1,5 @@
 Class {
-	#name : #PreciseInterpreterPresenterTest,
+	#name : #PreciseProfilerPresenterTest,
 	#superclass : #TestCase,
 	#instVars : [
 		'window'
@@ -8,13 +8,13 @@ Class {
 }
 
 { #category : #test }
-PreciseInterpreterPresenterTest >> tearDown [
+PreciseProfilerPresenterTest >> tearDown [
 	super tearDown.
 	window ifNotNil: [ window close ]
 ]
 
 { #category : #test }
-PreciseInterpreterPresenterTest >> testSelectingElementInTheListUpdatesCodePresenter [
+PreciseProfilerPresenterTest >> testSelectingElementInTheListUpdatesCodePresenter [
 	| interpreter presenter methodTree |
 	interpreter := PreciseInterpreter new.
 	interpreter runOn: 5 method: #+ andArguments: #(3).
@@ -28,7 +28,7 @@ PreciseInterpreterPresenterTest >> testSelectingElementInTheListUpdatesCodePrese
 ]
 
 { #category : #test }
-PreciseInterpreterPresenterTest >> testSmallIntegerAddition [
+PreciseProfilerPresenterTest >> testSmallIntegerAddition [
 	| interpreter presenter methodTree |
 	interpreter := PreciseInterpreter new.
 	interpreter runOn: 5 method: #+ andArguments: #(3).
