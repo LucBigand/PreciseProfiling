@@ -228,7 +228,7 @@ CHInterpreterTest >> testReturnRecursiveLiteralArray [
 CHInterpreterTest >> testReturnResultOfBlockWithArgument [
 	self
 		assert: (self executeSelector: #returnResultOfBlockWithArgument)
-		equals: #(2 4 6).
+		equals: #(2 4 6 8 10).
 ]
 
 { #category : #'tests - return' }

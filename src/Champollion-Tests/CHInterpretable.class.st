@@ -173,7 +173,7 @@ CHInterpretable >> returnRecursiveLiteralArray [
 
 { #category : #return }
 CHInterpretable >> returnResultOfBlockWithArgument [
-	^ #(1 2 3) collect: [ :each | 2 * each ]
+	^ #(1 2 3 4 5) collect: [ :each | 2 * each ]
 ]
 
 { #category : #return }

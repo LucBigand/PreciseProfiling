@@ -251,7 +251,7 @@ CHInterpreter >> primitiveAtPut [
 		ifFalse: [ CHPrimitiveFail signal ].
 	((self argumentAt: 1) isKindOf: SmallInteger)
 		ifFalse: [ CHPrimitiveFail signal ].
-	self receiver size <= (self argumentAt: 1)
+	self receiver size < (self argumentAt: 1)
 		ifTrue: [ CHPrimitiveFail signal ].
 	^ self receiver at: (self argumentAt: 1) put: (self argumentAt: 2).
 ]
