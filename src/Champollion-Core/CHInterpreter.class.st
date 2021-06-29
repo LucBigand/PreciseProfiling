@@ -55,7 +55,13 @@ CHInterpreter >> auxVisitMessageNode: aNode [
 
 { #category : #accessing }
 CHInterpreter >> currentMethod [
-	^ self tempAt: #___method.
+	| method |
+	method := self tempAt: #___method.
+	(method methodClass == FullBlockClosure)
+		ifTrue: [ ^ self homeFrame read: #___method ]
+		ifFalse: [ ^ method ]
+	"^ self homeFrame read: #___method."	
+	"^ self tempAt: #___method."
 ]
 
 { #category : #accessing }
@@ -677,15 +683,15 @@ CHInterpreter >> visitSelfNode: aNode [
 { #category : #visiting }
 CHInterpreter >> visitSequenceNode: aNode [
 	| res |
-	(aNode statements size = 0)
+	(aNode statements isEmpty)
 		ifTrue: [ ^ self homeFrame receiver ].
 	aNode temporaryNames
 		do: [ :each | self tempAt: each put: nil ].
 	aNode statements allButLast
 		do: [ :each | self visitNode: each ].
 	res := self visitNode: aNode statements last.
-	(aNode statements last isAssignment and: aNode parent isMethod )
-		ifTrue: [ ^ self receiver ]
+	(aNode statements last isReturn not and: aNode parent isMethod)
+		ifTrue: [ ^ self receiver  ]
 		ifFalse: [ ^ res ]
 ]
 
