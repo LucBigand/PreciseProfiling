@@ -42,8 +42,10 @@ CHMethodScope >> parentScope: anObject [
 { #category : #accessing }
 CHMethodScope >> read: aString [
 	(self includesKey: aString)
-		ifTrue: [ ^ variables at: aString ] 
-		ifFalse: [ ^ self homeFrame read: aString ] .
+		ifTrue: [ ^ variables at: aString ].
+	((receiver class == CHBlock) and: (FullBlockClosure allInstVarNames includes: aString))
+		ifTrue: [ ^ receiver perform: aString ].
+	 ^ self homeFrame read: aString.
 ]
 
 { #category : #accessing }
@@ -59,6 +61,8 @@ CHMethodScope >> receiver: aCHInterpretable [
 { #category : #accessing }
 CHMethodScope >> scopeDefining: aString [
 	(variables includesKey: aString)
+		ifTrue: [ ^ self ].
+	((receiver class == CHBlock) and: (FullBlockClosure allInstVarNames includes: aString))
 		ifTrue: [ ^ self ].
 	^ self parentScope scopeDefining: aString.
 ]

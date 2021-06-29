@@ -36,6 +36,18 @@ PreciseProfilerTest >> testInterpreteCHInterpretableLastExpression [
 ]
 
 { #category : #test }
+PreciseProfilerTest >> testInterpreteCHInterpreter [
+	| ast |
+	ast := (CHInterpretable >> #lastExpression) ast.
+	self
+		assert: (interpreter 
+			runOn: CHInterpreter new 
+			method: #execute:withReceiver:
+			andArguments: { ast . CHInterpretable new } )
+		equals: 43.
+]
+
+{ #category : #test }
 PreciseProfilerTest >> testInterpreteColorTranslucent [
 	self
 		assert: (interpreter runOn: Color red method: #translucent)

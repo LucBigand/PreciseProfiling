@@ -174,6 +174,7 @@ CHInterpreter >> initializePrimitiveTable [
 	primitives at: 105	put: #primitiveReplaceFromToWithStartingAt.
 	primitives at: 110	put: #primitiveIdentical.
 	primitives at: 111	put: #primitiveClass.
+	primitives at: 148	put: #primitiveShallowCopy.
 	primitives at: 163	put: #primitiveIsReadOnlyObject.
 	primitives at: 169	put: #primitiveDifferent.
 	primitives at: 170	put: #primitiveValue.
@@ -407,6 +408,11 @@ CHInterpreter >> primitiveReplaceFromToWithStartingAt [
 ]
 
 { #category : #primitives }
+CHInterpreter >> primitiveShallowCopy [
+	^ self receiver shallowCopy
+]
+
+{ #category : #primitives }
 CHInterpreter >> primitiveSize [
 	self receiver class classLayout isVariable
 		ifFalse: [ CHPrimitiveFail signal ].
@@ -610,6 +616,23 @@ CHInterpreter >> visitBlockNode: aNode [
 ]
 
 { #category : #visiting }
+CHInterpreter >> visitCascadeMessage: aMessageNode withReceiver: anObject [
+	| ast args |
+	ast := (self lookup: aMessageNode selector fromClass: anObject class) ast.
+	args := aMessageNode arguments collect: [ :argNode | self visitNode: argNode ].
+	^ self execute: ast withReceiver: anObject andArguments: args.
+]
+
+{ #category : #visiting }
+CHInterpreter >> visitCascadeNode: aNode [
+	| receiver |
+	receiver := self visitNode: (aNode messages at: 1).
+	aNode messages allButLast do: [ :each |
+		self visitCascadeMessage: each withReceiver: receiver ].
+	^ self visitCascadeMessage: aNode messages last withReceiver: receiver
+]
+
+{ #category : #visiting }
 CHInterpreter >> visitClassVariableNode: aNode [
 	| lookupClass |
 	lookupClass := self receiver isClass
@@ -659,6 +682,7 @@ CHInterpreter >> visitMethodNode: aNode [
 	[ aNode isPrimitive ifTrue: [ 
 		^ self executePrimitiveMethod: aNode ]]
 		on: CHPrimitiveFail do: [ :err | ].
+	"aNode isPrimitive ifTrue: [ self halt ]."
 	^ self visitNode: aNode body.
 ]
 

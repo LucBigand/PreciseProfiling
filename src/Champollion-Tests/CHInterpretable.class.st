@@ -10,9 +10,21 @@ Class {
 	#category : #'Champollion-Tests'
 }
 
+{ #category : #setting }
+CHInterpretable >> addToX: anInteger [
+	x := x + anInteger
+]
+
 { #category : #return }
 CHInterpretable >> callingFailingPrimitive [
 	^ self failingPrimitive
+]
+
+{ #category : #return }
+CHInterpretable >> cascadeMessage [
+	^ self store100intoX;
+		addToX: 200;
+		x.
 ]
 
 { #category : #setting }

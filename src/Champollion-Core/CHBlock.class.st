@@ -34,6 +34,11 @@ CHBlock >> definingContext: aScope [
 ]
 
 { #category : #accessing }
+CHBlock >> numArgs [
+	^ code arguments size
+]
+
+{ #category : #accessing }
 CHBlock >> value [
 	<primitive: 201>
 	^ nil

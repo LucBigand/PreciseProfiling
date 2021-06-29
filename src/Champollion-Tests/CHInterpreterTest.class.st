@@ -90,6 +90,13 @@ CHInterpreterTest >> testBlockValueWithTemporaries [
 ]
 
 { #category : #'tests - return' }
+CHInterpreterTest >> testCascadeMessage [
+	self
+		assert: (self executeSelector: #cascadeMessage)
+		equals: 300.
+]
+
+{ #category : #'tests - return' }
 CHInterpreterTest >> testEvaluationOrder [
 	| argumentEvaluationOrder |
 	argumentEvaluationOrder := self executeSelector: #returnEvaluationOrder.
