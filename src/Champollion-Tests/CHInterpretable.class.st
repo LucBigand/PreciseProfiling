@@ -189,6 +189,11 @@ CHInterpretable >> returnResultOfBlockWithArgument [
 ]
 
 { #category : #return }
+CHInterpretable >> returnResultOfNestedBlocksWithArgument [
+	^ #( 1 2 3 ) collect: [ :x1 | (x1 to: (x1 + 2)) collect: [ :x2 | 2 * x2] ]
+]
+
+{ #category : #return }
 CHInterpretable >> returnSelf [
 	^ self
 ]

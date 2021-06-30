@@ -45,8 +45,9 @@ CHMethodScope >> read: aString [
 		ifTrue: [ ^ variables at: aString ].
 	((receiver class == CHBlock) and: (FullBlockClosure allInstVarNames includes: aString))
 		ifTrue: [ ^ receiver perform: aString ].
-	(self homeFrame == self) ifTrue: [ self halt ].
-	 ^ self homeFrame read: aString.
+	(self includesKey: #__definingContext)
+		ifTrue: [ ^ (variables at: #__definingContext) read: aString ].
+	self halt.
 ]
 
 { #category : #accessing }

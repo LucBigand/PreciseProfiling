@@ -239,6 +239,13 @@ CHInterpreterTest >> testReturnResultOfBlockWithArgument [
 ]
 
 { #category : #'tests - return' }
+CHInterpreterTest >> testReturnResultOfNestedBlocksWithArgument [
+	self
+		assert: (self executeSelector: #returnResultOfNestedBlocksWithArgument)
+		equals: #(#(2 4 6) #(4 6 8) #(6 8 10))
+]
+
+{ #category : #'tests - return' }
 CHInterpreterTest >> testReturnSelf [
 	self
 		assert: (self executeSelector: #returnSelf)
