@@ -245,9 +245,10 @@ CHInterpreter >> primitiveAt [
 		ifFalse: [ CHPrimitiveFail signal ].
 	((self argumentAt: 1) isKindOf: SmallInteger)
 		ifFalse: [ CHPrimitiveFail signal ].
-	self receiver size < (self argumentAt: 1)
+	self receiver basicSize < (self argumentAt: 1)
 		ifTrue: [ CHPrimitiveFail signal ].
-	^ self receiver at: (self argumentAt: 1).
+	[ ^ self receiver at: (self argumentAt: 1) ]
+		on: Exception do: [ ^ self receiver basicAt: (self argumentAt: 1) ].
 ]
 
 { #category : #primitives }
@@ -258,7 +259,7 @@ CHInterpreter >> primitiveAtPut [
 		ifFalse: [ CHPrimitiveFail signal ].
 	((self argumentAt: 1) isKindOf: SmallInteger)
 		ifFalse: [ CHPrimitiveFail signal ].
-	self receiver size < (self argumentAt: 1)
+	self receiver basicSize < (self argumentAt: 1)
 		ifTrue: [ CHPrimitiveFail signal ].
 	^ self receiver at: (self argumentAt: 1) put: (self argumentAt: 2).
 ]
@@ -603,7 +604,8 @@ CHInterpreter >> visitAssignmentNode: aNode [
 		ifTrue: [ | definingFrame |
 			definingFrame := self lookupFrameDefiningTemporary: aNode variable name.
 			definingFrame write: aNode variable name withValue: value ]
-		ifFalse: [ aNode variable variable write: value to: self receiver ].
+		ifFalse: [ [ aNode variable variable write: value to: self receiver ]
+			on: Exception do: [ self tempAt: aNode variable name put: value ] ].
 	^ value.
 ]
 
