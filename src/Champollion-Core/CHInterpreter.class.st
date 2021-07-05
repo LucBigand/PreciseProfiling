@@ -53,6 +53,17 @@ CHInterpreter >> auxVisitMessageNode: aNode [
 	^ Dictionary newFrom: { 'method' -> method . 'receiver' -> newReceiver . 'args' -> args }
 ]
 
+{ #category : #utility }
+CHInterpreter >> class: aSubclass isDescendentOf: aClass [
+	| currentClass |
+	aSubclass isClass ifFalse: [ ^ false ].
+	currentClass := aSubclass.
+	[ currentClass isNotNil ] whileTrue: [ 
+		currentClass  == aClass ifTrue: [ ^ true ].
+		currentClass := currentClass superclass ].
+	^ false
+]
+
 { #category : #accessing }
 CHInterpreter >> currentMethod [
 	| method |
@@ -180,6 +191,7 @@ CHInterpreter >> initializePrimitiveTable [
 	primitives at: 170	put: #primitiveValue.
 	primitives at: 171	put: #primitiveAsInteger.
 	primitives at: 175	put: #primitiveBasicIdentityHash.
+	primitives at: 199	put: #primitiveBlockOnDo.
 	primitives at: 201	put: #primitiveBlockValue.
 	primitives at: 202	put: #primitiveBlockValueWithArg.
 	primitives at: 207	put: #primitiveBlockValue.
@@ -285,6 +297,21 @@ CHInterpreter >> primitiveBasicNewVariable [
 	((self argumentAt: 1) isKindOf: SmallInteger)
 		ifFalse: [ CHPrimitiveFail signal ].
 	^ self receiver basicNew: (self argumentAt: 1).
+]
+
+{ #category : #primitives }
+CHInterpreter >> primitiveBlockOnDo [
+	"Work in progress"
+	| exception alternativeBlock currentFrame |
+	exception := (self argumentAt: 1).
+	alternativeBlock := (self argumentAt: 2).
+	currentFrame := self topFrame.
+	[ ^ self primitiveBlockValue ]
+		on: exception
+		do: [ 
+			[ self topFrame ~= currentFrame ] whileTrue: [ self popFrame ].
+			self receiver: alternativeBlock.
+			^ self primitiveBlockValue ]
 ]
 
 { #category : #primitives }
@@ -731,4 +758,10 @@ CHInterpreter >> visitTemporaryVariableNode: aNode [
 	| definingFrame |
 	definingFrame := self lookupFrameDefiningTemporary: aNode name.
 	^ definingFrame read: aNode name.
+]
+
+{ #category : #visiting }
+CHInterpreter >> visitThisContextNode: aNode [
+	((self tempAt: #___method) selector == #signal)
+		ifTrue: [ ^ self receiver signal ]
 ]

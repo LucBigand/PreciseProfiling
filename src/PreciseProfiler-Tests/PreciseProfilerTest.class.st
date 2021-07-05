@@ -78,21 +78,21 @@ PreciseProfilerTest >> testInterpreteFactorial5 [
 { #category : #test }
 PreciseProfilerTest >> testInterpreteJavadocClass [
 	self
-		assert: ((interpreter
+		assert: (interpreter
 			runOn: Javadoc 
 			method: #runOnClass: 
 			andArguments: { SmallInteger })
-				beginsWith: 'Class : SmallInteger')
+		equals: (Javadoc runOnClass: SmallInteger)
 ]
 
 { #category : #test }
 PreciseProfilerTest >> testInterpreteJavadocPackage [
 	self
-		assert: ((interpreter
+		assert: (interpreter
 			runOn: Javadoc 
 			method: #runOnPackage: 
-			andArguments: { SmallInteger package })
-				beginsWith: 'Package : Kernel')
+			andArguments: { PreciseProfilerTest package })
+		equals: (Javadoc runOnPackage: PreciseProfilerTest package)
 ]
 
 { #category : #test }

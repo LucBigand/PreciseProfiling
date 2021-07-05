@@ -77,6 +77,20 @@ CHInterpreterTest >> testBalancingStack [
 ]
 
 { #category : #'tests - return' }
+CHInterpreterTest >> testBlockOnDoWithError [
+	self
+		assert: (self executeSelector: #blockOnDoWithError)
+		equals: 1.
+]
+
+{ #category : #'tests - return' }
+CHInterpreterTest >> testBlockOnDoWithNoError [
+	self
+		assert: (self executeSelector: #blockOnDoWithNoError)
+		equals: 0.
+]
+
+{ #category : #'tests - return' }
 CHInterpreterTest >> testBlockValueIsLastStatementValue [
 	"TODO : rewrite the test"
 	

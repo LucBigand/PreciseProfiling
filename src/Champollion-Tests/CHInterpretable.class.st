@@ -15,6 +15,20 @@ CHInterpretable >> addToX: anInteger [
 	x := x + anInteger
 ]
 
+{ #category : #'error signalling' }
+CHInterpretable >> blockOnDoWithError [
+	| res |
+	[ res := 0. self errorSignal ] on: Error do: [ res := 1 ].
+	^ res
+]
+
+{ #category : #'error signalling' }
+CHInterpretable >> blockOnDoWithNoError [
+	| res |
+	[ res := 0 ] on: Error do: [ res := 1 ].
+	^ res
+]
+
 { #category : #return }
 CHInterpretable >> callingFailingPrimitive [
 	^ self failingPrimitive
@@ -50,6 +64,11 @@ CHInterpretable >> collaborator: anObject [
 { #category : #return }
 CHInterpretable >> doesSuperLookupFromSuperclass [
 	^ super isInSuperclass.
+]
+
+{ #category : #'error signalling' }
+CHInterpretable >> errorSignal [
+	Error signal
 ]
 
 { #category : #accessing }
