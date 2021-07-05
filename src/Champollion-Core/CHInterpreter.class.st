@@ -614,7 +614,7 @@ CHInterpreter >> topFrame [
 
 { #category : #visiting }
 CHInterpreter >> visitArgumentVariableNode: aNode [
-	^ self topFrame read: aNode name. 
+	^ self visitTempOrArgVariableNode: aNode
 ]
 
 { #category : #visiting }
@@ -754,10 +754,15 @@ CHInterpreter >> visitSuperNode: aNode [
 ]
 
 { #category : #visiting }
-CHInterpreter >> visitTemporaryVariableNode: aNode [
+CHInterpreter >> visitTempOrArgVariableNode: aNode [
 	| definingFrame |
 	definingFrame := self lookupFrameDefiningTemporary: aNode name.
 	^ definingFrame read: aNode name.
+]
+
+{ #category : #visiting }
+CHInterpreter >> visitTemporaryVariableNode: aNode [
+	^ self visitTempOrArgVariableNode: aNode
 ]
 
 { #category : #visiting }

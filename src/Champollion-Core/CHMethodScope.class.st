@@ -43,9 +43,7 @@ CHMethodScope >> parentScope: anObject [
 CHMethodScope >> read: aString [
 	(self includesKey: aString)
 		ifTrue: [ ^ variables at: aString ].
-	((receiver class == CHBlock) and: (FullBlockClosure allInstVarNames includes: aString))
-		ifTrue: [ ^ receiver perform: aString ].
-	^ (variables at: #__definingContext) read: aString.
+	^ receiver perform: aString 
 ]
 
 { #category : #accessing }
