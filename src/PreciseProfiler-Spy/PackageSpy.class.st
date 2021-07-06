@@ -9,10 +9,13 @@ Class {
 
 { #category : #setting }
 PackageSpy >> addClass: aClass [
-	| classSpy |
+	| classSpy subclasses |
 	classSpy := ClassSpy new initializeWith: aClass.
-	(aClass package == aClass superclass package)
-		ifTrue: [ classSpy setSuperclassSpy: (self addClass: aClass superclass) ].
+	subclasses := aClass subclasses select: [ :subclass | 
+		(subclass package == aClass package) and: subclass isMeta not ].
+	subclasses do: [ :subclass | | subclassSpy |
+		subclassSpy := self addClass: subclass.
+		subclassSpy setSuperclassSpy: classSpy ].
 	classSpies at: aClass put: classSpy.
 	^ classSpy
 ]
@@ -36,7 +39,8 @@ PackageSpy >> initialize [
 { #category : #initialization }
 PackageSpy >> initializeWith: aPackage [
 	| classes |
-	classes := aPackage classes select: [ :class |
-		 (class subclasses intersection: aPackage classes) isEmpty ].
+	classes := aPackage classes reject: [ :class |
+		(aPackage classes includes: class superclass) or:
+		(aPackage classExtensionSelectors keys includes: class name) ].
 	classes do: [ :class | self addClass: class ]
 ]

@@ -16,6 +16,20 @@ PreciseProfilerSpyTest >> setUp [
 ]
 
 { #category : #setup }
+PreciseProfilerSpyTest >> testAddKernelPackageToCodeProfiler [
+	| kernelPackage kernelClasses |
+	kernelPackage := SmallInteger package.
+	kernelClasses := kernelPackage classes reject: [ :class |
+		kernelPackage classExtensionSelectors keys includes: class name ].
+	profiler addPackage: kernelPackage.
+	kernelClasses do: [ :class |
+		self assert: ( profiler classSpyAt: class ) class
+			equals: ClassSpy].
+	self assert: (profiler packageSpyAt: kernelPackage) classSpies size
+		equals: kernelClasses size
+]
+
+{ #category : #setup }
 PreciseProfilerSpyTest >> testClassSpiesCreated [
 	packageTested classes do: [ :class |
 		self assert: ( profiler classSpyAt: class ) class
