@@ -76,9 +76,9 @@ PreciseProfiler >> visitCascadeMessage: aMessageNode withReceiver: anObject [
 PreciseProfiler >> visitMessageNode: aNode [
 	| dict |
 	dict := self auxVisitMessageNode: aNode.
-	self registerMethodCall: (dict at: 'method').
+	self registerMethodCall: (dict at: #method).
 	^ self 
-		execute: ((dict at: 'method') ast)
-		withReceiver: (dict at: 'receiver')
-		andArguments: (dict at: 'args').
+		execute: ((dict at: #method) ast)
+		withReceiver: (dict at: #receiver)
+		andArguments: (dict at: #args).
 ]

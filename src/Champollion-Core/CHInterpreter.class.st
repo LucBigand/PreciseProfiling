@@ -50,7 +50,7 @@ CHInterpreter >> auxVisitMessageNode: aNode [
 		               ifTrue: [ self currentMethod methodClass superclass ]
 		               ifFalse: [ newReceiver class ].
 	method := self lookup: aNode selector fromClass: lookupClass.
-	^ Dictionary newFrom: { 'method' -> method . 'receiver' -> newReceiver . 'args' -> args }
+	^ Dictionary newFrom: { #method -> method . #receiver -> newReceiver . #args -> args }
 ]
 
 { #category : #utility }
@@ -157,54 +157,57 @@ CHInterpreter >> initialize [
 
 { #category : #initialization }
 CHInterpreter >> initializePrimitiveTable [
-	primitives at: 1	put: #primitiveSmallIntegerAdd.
-	primitives at: 2	put: #primitiveSmallIntegerMinus.
-	primitives at: 3	put: #primitiveSmallIntegerLessThan.
-	primitives at: 4	put: #primitiveSmallIntegerGreaterThan.
-	primitives at: 5	put: #primitiveSmallIntegerLessOrEqualsThan.
-	primitives at: 6	put: #primitiveSmallIntegerGreaterOrEqualsThan.
-	primitives at: 7	put: #primitiveSmallIntegerEqualsThan.
-	primitives at: 8	put: #primitiveSmallIntegerNotEqualsThan.
-	primitives at: 9	put: #primitiveSmallIntegerMultiply.
-	primitives at: 10	put: #primitiveSmallIntegerDivide.
-	primitives at: 11	put: #primitiveSmallIntegerModulo.
-	primitives at: 12	put: #primitiveSmallIntegerEuclidianDivide.
-	primitives at: 14	put: #primitiveSmallIntegerBitAnd.
-	primitives at: 17	put: #primitiveSmallIntegerBitShift.
-	primitives at: 29	put: #primitiveSmallIntegerMultiply.
-	primitives at: 40	put: #primitiveAsFloat.
-	primitives at: 60	put: #primitiveAt.
-	primitives at: 61	put: #primitiveAtPut.
-	primitives at: 62	put: #primitiveSize.
-	primitives at: 63	put: #primitiveAt.
-	primitives at: 64	put: #primitiveAtPut.
-	primitives at: 70	put: #primitiveBasicNew.
-	primitives at: 71	put: #primitiveBasicNewVariable.
-	primitives at: 75	put: #primitiveBasicIdentityHash.
-	primitives at: 83	put: #primitivePerformWith.
-	primitives at: 105	put: #primitiveReplaceFromToWithStartingAt.
-	primitives at: 110	put: #primitiveIdentical.
-	primitives at: 111	put: #primitiveClass.
-	primitives at: 148	put: #primitiveShallowCopy.
-	primitives at: 163	put: #primitiveIsReadOnlyObject.
-	primitives at: 169	put: #primitiveDifferent.
-	primitives at: 170	put: #primitiveValue.
-	primitives at: 171	put: #primitiveAsInteger.
-	primitives at: 175	put: #primitiveBasicIdentityHash.
-	primitives at: 199	put: #primitiveBlockOnDo.
-	primitives at: 201	put: #primitiveBlockValue.
-	primitives at: 202	put: #primitiveBlockValueWithArg.
-	primitives at: 207	put: #primitiveBlockValue.
-	primitives at: 541	put: #primitiveFloatAdd.
-	primitives at: 542	put: #primitiveFloatMinus.
-	primitives at: 547	put: #primitiveFloatEqualsThan.
-	primitives at: 549	put: #primitiveFloatMultiply.
-	primitives at: 550	put: #primitiveFloatDivide.
-	primitives at: 554	put: #primitiveTimesTwoPower.
-	primitives at: 'primDigitBitShiftMagnitude' put: #primitiveDigitBitShiftMagnitude.
-	primitives at: 'primDigitMultiplyNegative' put: #primitiveDigitMultiplyNegative.
-	primitives at: 'primitiveCompareString' put: #primitiveCompareString .
-	primitives at: 'primitiveStringHash' put: #primitiveStringHash
+	primitives 
+		at: 1	put: #primitiveSmallIntegerAdd;
+		at: 2	put: #primitiveSmallIntegerMinus;
+		at: 3	put: #primitiveSmallIntegerLessThan;
+		at: 4	put: #primitiveSmallIntegerGreaterThan;
+		at: 5	put: #primitiveSmallIntegerLessOrEqualsThan;
+		at: 6	put: #primitiveSmallIntegerGreaterOrEqualsThan;
+		at: 7	put: #primitiveSmallIntegerEqualsThan;
+		at: 8	put: #primitiveSmallIntegerNotEqualsThan;
+		at: 9	put: #primitiveSmallIntegerMultiply;
+		at: 10	put: #primitiveSmallIntegerDivide;
+		at: 11	put: #primitiveSmallIntegerModulo;
+		at: 12	put: #primitiveSmallIntegerEuclidianDivide;
+		at: 14	put: #primitiveSmallIntegerBitAnd;
+		at: 17	put: #primitiveSmallIntegerBitShift;
+		at: 18	put: #primitiveSmallIntegerPoint;
+		at: 29	put: #primitiveSmallIntegerMultiply;
+		at: 40	put: #primitiveAsFloat;
+		at: 60	put: #primitiveAt;
+		at: 61	put: #primitiveAtPut;
+		at: 62	put: #primitiveSize;
+		at: 63	put: #primitiveAt;
+		at: 64	put: #primitiveAtPut;
+		at: 70	put: #primitiveBasicNew;
+		at: 71	put: #primitiveBasicNewVariable;
+		at: 75	put: #primitiveBasicIdentityHash;
+		at: 83	put: #primitivePerformWith;
+		at: 84	put: #primitivePerformWithArguments;
+		at: 105	put: #primitiveReplaceFromToWithStartingAt;
+		at: 110	put: #primitiveIdentical;
+		at: 111	put: #primitiveClass;
+		at: 148	put: #primitiveShallowCopy;
+		at: 163	put: #primitiveIsReadOnlyObject;
+		at: 169	put: #primitiveDifferent;
+		at: 170	put: #primitiveValue;
+		at: 171	put: #primitiveAsInteger;
+		at: 175	put: #primitiveBasicIdentityHash;
+		at: 199	put: #primitiveBlockOnDo;
+		at: 201	put: #primitiveBlockValue;
+		at: 202	put: #primitiveBlockValueWithArg;
+		at: 207	put: #primitiveBlockValue;
+		at: 541	put: #primitiveFloatAdd;
+		at: 542	put: #primitiveFloatMinus;
+		at: 547	put: #primitiveFloatEqualsThan;
+		at: 549	put: #primitiveFloatMultiply;
+		at: 550	put: #primitiveFloatDivide;
+		at: 554	put: #primitiveTimesTwoPower;
+		at: 'primDigitBitShiftMagnitude' put: #primitiveDigitBitShiftMagnitude;
+		at: 'primDigitMultiplyNegative' put: #primitiveDigitMultiplyNegative;
+		at: 'primitiveCompareString' put: #primitiveCompareString ;
+		at: 'primitiveStringHash' put: #primitiveStringHash
 ]
 
 { #category : #accessing }
@@ -421,9 +424,20 @@ CHInterpreter >> primitiveIsReadOnlyObject [
 CHInterpreter >> primitivePerformWith [
 	self numberOfArguments < 2
 		ifTrue: [ CHPrimitiveFail signal ].
-	^ self receiver
-		perform: (self argumentAt: 1)
-		with: (self argumentAt: 2).
+	^ self 
+		execute: (self lookup: (self argumentAt: 1) fromClass: self receiver class ) ast
+		withReceiver: self receiver
+		andArguments: { self argumentAt: 2 }
+]
+
+{ #category : #primitives }
+CHInterpreter >> primitivePerformWithArguments [
+	self numberOfArguments < 2
+		ifTrue: [ CHPrimitiveFail signal ].
+	^ self 
+		execute: (self lookup: (self argumentAt: 1) fromClass: self receiver class ) ast
+		withReceiver: self receiver
+		andArguments: ( self argumentAt: 2 )
 ]
 
 { #category : #primitives }
@@ -537,6 +551,12 @@ CHInterpreter >> primitiveSmallIntegerMultiply [
 CHInterpreter >> primitiveSmallIntegerNotEqualsThan [
 	self assertSmallIntegerReceiverAndArgument.
 	^ (self receiver) ~= (self argumentAt: 1).
+]
+
+{ #category : #primitives }
+CHInterpreter >> primitiveSmallIntegerPoint [
+	self assertSmallIntegerReceiverAndArgument.
+	^ (self receiver) @ (self argumentAt: 1).
 ]
 
 { #category : #primitives }
@@ -701,9 +721,9 @@ CHInterpreter >> visitMessageNode: aNode [
 	| dict |
 	dict := self auxVisitMessageNode: aNode.
 	^ self 
-		execute: ((dict at: 'method') ast)
-		withReceiver: (dict at: 'receiver')
-		andArguments: (dict at: 'args').
+		execute: ((dict at: #method) ast)
+		withReceiver: (dict at: #receiver)
+		andArguments: (dict at: #args).
 ]
 
 { #category : #visiting }

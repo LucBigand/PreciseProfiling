@@ -136,6 +136,36 @@ CHInterpretable >> next [
 	^ next.
 ]
 
+{ #category : #display }
+CHInterpretable >> openRoassalCanvas [
+
+	| canvas scale r aNumber circle label composite |
+	canvas := RSCanvas new.
+	scale := NSScale category20c.
+
+	r := Random seed: 42.
+	81 timesRepeat: [ 
+		aNumber := r nextInteger: 10.
+		circle := RSCircle new
+			          size: 30;
+			          color: (scale scale: aNumber).
+		label := RSLabel new
+			         color: Color black;
+			         text: aNumber.
+		composite := { 
+			             circle.
+			             label } asGroup asShapeFor: aNumber.
+		canvas add: composite ].
+
+	RSGridLayout new
+		lineItemsCount: 9;
+		on: canvas nodes.
+
+	canvas @ RSCanvasController.
+	canvas open.
+	canvas close.
+]
+
 { #category : #return }
 CHInterpretable >> overridenMethod [
 	^ super overridenMethod
