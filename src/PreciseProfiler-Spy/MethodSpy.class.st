@@ -7,7 +7,7 @@ Class {
 		'receivers',
 		'numberOfCalls'
 	],
-	#category : #'PreciseProfiler - Spy'
+	#category : #'PreciseProfiler-Spy'
 }
 
 { #category : #accessing }

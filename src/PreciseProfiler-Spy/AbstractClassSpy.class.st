@@ -5,7 +5,7 @@ Class {
 		'methodSpies',
 		'superclassSpy'
 	],
-	#category : #'PreciseProfiler - Spy'
+	#category : #'PreciseProfiler-Spy'
 }
 
 { #category : #setting }

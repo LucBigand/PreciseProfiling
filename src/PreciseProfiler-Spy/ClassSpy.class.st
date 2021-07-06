@@ -4,7 +4,7 @@ Class {
 	#instVars : [
 		'metaclassSpy'
 	],
-	#category : #'PreciseProfiler - Spy'
+	#category : #'PreciseProfiler-Spy'
 }
 
 { #category : #initialization }

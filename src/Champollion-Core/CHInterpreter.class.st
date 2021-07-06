@@ -170,6 +170,7 @@ CHInterpreter >> initializePrimitiveTable [
 		at: 10	put: #primitiveSmallIntegerDivide;
 		at: 11	put: #primitiveSmallIntegerModulo;
 		at: 12	put: #primitiveSmallIntegerEuclidianDivide;
+		at: 13	put: #primitiveSmallIntegerQuo;
 		at: 14	put: #primitiveSmallIntegerBitAnd;
 		at: 17	put: #primitiveSmallIntegerBitShift;
 		at: 18	put: #primitiveSmallIntegerPoint;
@@ -207,6 +208,8 @@ CHInterpreter >> initializePrimitiveTable [
 		at: 'primDigitBitShiftMagnitude' put: #primitiveDigitBitShiftMagnitude;
 		at: 'primDigitMultiplyNegative' put: #primitiveDigitMultiplyNegative;
 		at: 'primitiveCompareString' put: #primitiveCompareString ;
+		at: 'primitiveFindSubstring' put: #primitiveFindSubstring;
+		at: 'primitiveIndexOfAsciiInString' put: #primitiveIndexOfAsciiInString ;
 		at: 'primitiveStringHash' put: #primitiveStringHash
 ]
 
@@ -379,6 +382,17 @@ CHInterpreter >> primitiveDigitMultiplyNegative [
 ]
 
 { #category : #primitives }
+CHInterpreter >> primitiveFindSubstring [
+	self numberOfArguments < 4
+		ifTrue: [ CHPrimitiveFail signal ].
+	self receiver
+		findSubstringViaPrimitive: (self argumentAt: 1)
+		in: (self argumentAt: 2) 
+		startingAt: (self argumentAt: 3)
+		matchTable: (self argumentAt: 4)
+]
+
+{ #category : #primitives }
 CHInterpreter >> primitiveFloatAdd [
 	self assertFloatArgument.
 	^ (self receiver) + (self argumentAt: 1).
@@ -413,6 +427,16 @@ CHInterpreter >> primitiveIdentical [
 	self numberOfArguments < 1
 		ifTrue: [ CHPrimitiveFail signal ].
 	^ (self receiver) == (self argumentAt: 1)
+]
+
+{ #category : #primitives }
+CHInterpreter >> primitiveIndexOfAsciiInString [
+	self numberOfArguments < 3
+		ifTrue: [ CHPrimitiveFail signal ].
+	^ self receiver
+		indexOfAscii: (self argumentAt: 1) 
+		inString: (self argumentAt: 2) 
+		startingAt: (self argumentAt: 3)
 ]
 
 { #category : #primitives }
@@ -557,6 +581,12 @@ CHInterpreter >> primitiveSmallIntegerNotEqualsThan [
 CHInterpreter >> primitiveSmallIntegerPoint [
 	self assertSmallIntegerReceiverAndArgument.
 	^ (self receiver) @ (self argumentAt: 1).
+]
+
+{ #category : #primitives }
+CHInterpreter >> primitiveSmallIntegerQuo [
+	self assertSmallIntegerReceiverAndArgument.
+	^ (self receiver) quo: (self argumentAt: 1).
 ]
 
 { #category : #primitives }

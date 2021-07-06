@@ -1,5 +1,5 @@
 Class {
 	#name : #MetaclassSpy,
 	#superclass : #AbstractClassSpy,
-	#category : #'PreciseProfiler - Spy'
+	#category : #'PreciseProfiler-Spy'
 }

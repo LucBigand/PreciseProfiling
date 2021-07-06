@@ -4,7 +4,7 @@ Class {
 	#instVars : [
 		'classSpies'
 	],
-	#category : #'PreciseProfiler - Spy'
+	#category : #'PreciseProfiler-Spy'
 }
 
 { #category : #setting }
