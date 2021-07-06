@@ -7,8 +7,8 @@ I am an ast interpreter that keeps a trace of all the method contexts with a tre
 	nextNode:		The calling context that will potentially be visited next (private)
 "
 Class {
-	#name : #PreciseInterpreter,
-	#superclass : #CHInterpreter,
+	#name : #PreciseProfiler,
+	#superclass : #AbstractPreciseProfiler,
 	#instVars : [
 		'methodList',
 		'currentNode',
@@ -18,37 +18,37 @@ Class {
 }
 
 { #category : #display }
-PreciseInterpreter >> display [
+PreciseProfiler >> display [
 	"Open this interpreter and associated tree node in a PreciseInterpreterPresenter"
 	^ PreciseInterpreterPresenter openOn: self
 ]
 
 { #category : #initialization }
-PreciseInterpreter >> initialize [
+PreciseProfiler >> initialize [
 	super initialize.
 	methodList := Dictionary new.
 	currentNode := PreciseRoot new.
 ]
 
 { #category : #accessing }
-PreciseInterpreter >> methodList [
+PreciseProfiler >> methodList [
 	^ methodList
 ]
 
 { #category : #setting }
-PreciseInterpreter >> popFrame [
+PreciseProfiler >> popFrame [
 	currentNode := currentNode parent.
 	^ super popFrame.
 ]
 
 { #category : #setting }
-PreciseInterpreter >> pushNewFrame [
+PreciseProfiler >> pushNewFrame [
 	currentNode := nextNode.
 	^ super pushNewFrame.
 ]
 
-{ #category : #visiting }
-PreciseInterpreter >> registerMethodCall: aCompiledMethod [
+{ #category : #registering }
+PreciseProfiler >> registerMethodCall: aCompiledMethod [
 	"Register the method call within the node tree"
 	| method |
 	method := (aCompiledMethod classBinding value == CHBlock)
@@ -62,36 +62,18 @@ PreciseInterpreter >> registerMethodCall: aCompiledMethod [
 ]
 
 { #category : #accessing }
-PreciseInterpreter >> rootNode [
+PreciseProfiler >> rootNode [
 	^ currentNode
 ]
 
-{ #category : #running }
-PreciseInterpreter >> runOn: aClass method: aSelector [
-	methodList := Dictionary new.
-	^ self runOn: aClass method: aSelector andArguments: #()
-]
-
-{ #category : #running }
-PreciseInterpreter >> runOn: aReceiver method: aSelector andArguments: args [
-	"Runs this interpreter on a program composed of aReveiver, aSelector, and arguments args
-	Example : The program '3 ** 5' is called with aReceiver = 3, aSelector = #**, and args = #(5)"
-	| ast method res |
-	method := (self lookup: aSelector fromClass: aReceiver class).
-	ast := method parseTree.
-	self registerMethodCall: method.
-	res := self execute: ast withReceiver: aReceiver andArguments: args.
-	^ res
-]
-
 { #category : #visiting }
-PreciseInterpreter >> visitCascadeMessage: aMessageNode withReceiver: anObject [
+PreciseProfiler >> visitCascadeMessage: aMessageNode withReceiver: anObject [
 	self registerMethodCall: (self lookup: aMessageNode selector fromClass: anObject class).
 	^  super visitCascadeMessage: aMessageNode withReceiver: anObject
 ]
 
 { #category : #visiting }
-PreciseInterpreter >> visitMessageNode: aNode [
+PreciseProfiler >> visitMessageNode: aNode [
 	| dict |
 	dict := self auxVisitMessageNode: aNode.
 	self registerMethodCall: (dict at: 'method').

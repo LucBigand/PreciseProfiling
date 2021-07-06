@@ -10,7 +10,7 @@ Class {
 { #category : #setup }
 PreciseProfilerTest >> setUp [
 	super setUp.
-	interpreter := PreciseInterpreter new.
+	interpreter := PreciseProfiler new.
 	
 ]
 

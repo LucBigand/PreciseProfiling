@@ -2,10 +2,17 @@ Class {
 	#name : #PreciseProfilerPresenterTest,
 	#superclass : #TestCase,
 	#instVars : [
-		'window'
+		'window',
+		'profiler'
 	],
 	#category : #'PreciseProfiler-Tests'
 }
+
+{ #category : #setup }
+PreciseProfilerPresenterTest >> setUp [
+	super setUp.
+	profiler := PreciseProfiler new
+]
 
 { #category : #test }
 PreciseProfilerPresenterTest >> tearDown [
@@ -15,10 +22,9 @@ PreciseProfilerPresenterTest >> tearDown [
 
 { #category : #test }
 PreciseProfilerPresenterTest >> testSelectingElementInTheListUpdatesCodePresenter [
-	| interpreter presenter methodTree |
-	interpreter := PreciseInterpreter new.
-	interpreter runOn: 5 method: #+ andArguments: #(3).
-	window := interpreter display.
+	| presenter methodTree |
+	profiler runOn: 5 method: #+ andArguments: #(3).
+	window := profiler display.
 	presenter := window presenter.
 	methodTree := presenter mainPresenter selectedPage activePresenter.
 	
@@ -29,10 +35,9 @@ PreciseProfilerPresenterTest >> testSelectingElementInTheListUpdatesCodePresente
 
 { #category : #test }
 PreciseProfilerPresenterTest >> testSmallIntegerAddition [
-	| interpreter presenter methodTree |
-	interpreter := PreciseInterpreter new.
-	interpreter runOn: 5 method: #+ andArguments: #(3).
-	window := interpreter display.
+	| presenter methodTree |
+	profiler runOn: 5 method: #+ andArguments: #(3).
+	window := profiler display.
 	presenter := window presenter.
 	methodTree := presenter mainPresenter selectedPage activePresenter.
 	self assert: ( methodTree roots at: 1 ) method
