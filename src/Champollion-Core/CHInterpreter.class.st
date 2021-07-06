@@ -309,7 +309,7 @@ CHInterpreter >> primitiveBlockOnDo [
 	[ ^ self primitiveBlockValue ]
 		on: exception
 		do: [ 
-			[ self topFrame ~= currentFrame ] whileTrue: [ self popFrame ].
+			[ self topFrame == currentFrame ] whileFalse: [ self popFrame ].
 			self receiver: alternativeBlock.
 			^ self primitiveBlockValue ]
 ]
@@ -767,6 +767,5 @@ CHInterpreter >> visitTemporaryVariableNode: aNode [
 
 { #category : #visiting }
 CHInterpreter >> visitThisContextNode: aNode [
-	((self tempAt: #___method) selector == #signal)
-		ifTrue: [ ^ self receiver signal ]
+	^ thisContext
 ]

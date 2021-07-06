@@ -17,12 +17,6 @@ Class {
 	#category : #PreciseProfiler
 }
 
-{ #category : #running }
-PreciseInterpreter >> class: aClass hasMethod: aSelector [
-	"A utility function. Verifies that aClass has among its method selectors aSelector"
-	^ (aClass methods collect: [ :each | each selector ]) includes: aSelector.
-]
-
 { #category : #display }
 PreciseInterpreter >> display [
 	"Open this interpreter and associated tree node in a PreciseInterpreterPresenter"
@@ -82,14 +76,18 @@ PreciseInterpreter >> runOn: aClass method: aSelector [
 PreciseInterpreter >> runOn: aReceiver method: aSelector andArguments: args [
 	"Runs this interpreter on a program composed of aReveiver, aSelector, and arguments args
 	Example : The program '3 ** 5' is called with aReceiver = 3, aSelector = #**, and args = #(5)"
-	| ast lookupClass res |
-	lookupClass := aReceiver class.
-	[ (lookupClass isNotNil) and: (self class: lookupClass hasMethod: aSelector) not ] whileTrue: 
-		[ lookupClass := lookupClass superclass ].
-	ast := (lookupClass >> aSelector) parseTree.
-	self registerMethodCall: (lookupClass >> aSelector).
+	| ast method res |
+	method := (self lookup: aSelector fromClass: aReceiver class).
+	ast := method parseTree.
+	self registerMethodCall: method.
 	res := self execute: ast withReceiver: aReceiver andArguments: args.
 	^ res
+]
+
+{ #category : #visiting }
+PreciseInterpreter >> visitCascadeMessage: aMessageNode withReceiver: anObject [
+	self registerMethodCall: (self lookup: aMessageNode selector fromClass: anObject class).
+	^  super visitCascadeMessage: aMessageNode withReceiver: anObject
 ]
 
 { #category : #visiting }
