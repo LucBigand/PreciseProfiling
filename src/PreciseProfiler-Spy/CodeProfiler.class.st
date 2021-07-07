@@ -57,7 +57,7 @@ CodeProfiler >> methodSpies [
 { #category : #accessing }
 CodeProfiler >> methodSpyAt: aMethod [
 	^ ((self packageSpyAt: aMethod classBinding value package)
-		classSpyAt: aMethod class)
+		classSpyAt: aMethod classBinding value)
 			methodSpyAt: aMethod
 ]
 

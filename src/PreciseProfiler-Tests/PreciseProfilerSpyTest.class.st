@@ -3,7 +3,8 @@ Class {
 	#superclass : #TestCase,
 	#instVars : [
 		'profiler',
-		'packageTested'
+		'packageTested',
+		'kernelPackage'
 	],
 	#category : #'PreciseProfiler-Tests'
 }
@@ -13,12 +14,12 @@ PreciseProfilerSpyTest >> setUp [
 	super setUp.
 	packageTested := CHInterpreter package.
 	profiler := CodeProfiler new addPackage: packageTested .
+	kernelPackage := SmallInteger package.
 ]
 
-{ #category : #setup }
+{ #category : #test }
 PreciseProfilerSpyTest >> testAddKernelPackageToCodeProfiler [
-	| kernelPackage kernelClasses |
-	kernelPackage := SmallInteger package.
+	| kernelClasses |
 	kernelClasses := kernelPackage classes reject: [ :class |
 		kernelPackage classExtensionSelectors keys includes: class name ].
 	profiler addPackage: kernelPackage.
@@ -29,7 +30,7 @@ PreciseProfilerSpyTest >> testAddKernelPackageToCodeProfiler [
 		equals: kernelClasses size
 ]
 
-{ #category : #setup }
+{ #category : #test }
 PreciseProfilerSpyTest >> testClassSpiesCreated [
 	packageTested classes do: [ :class |
 		self assert: ( profiler classSpyAt: class ) class
@@ -38,7 +39,7 @@ PreciseProfilerSpyTest >> testClassSpiesCreated [
 		equals: packageTested classes size
 ]
 
-{ #category : #setup }
+{ #category : #test }
 PreciseProfilerSpyTest >> testClassSpiesCreatedForSuperclasses [
 	| classes |
 	classes :=  packageTested classes select: [ :class |
@@ -48,7 +49,14 @@ PreciseProfilerSpyTest >> testClassSpiesCreatedForSuperclasses [
 			equals: (profiler classSpyAt: class superclass) ].
 ]
 
-{ #category : #setup }
+{ #category : #test }
+PreciseProfilerSpyTest >> testInterpreteExponentiation [
+	profiler addPackage: kernelPackage.
+	self assert: (profiler runOn: 5 method: #** andArguments: #(3))
+		equals: 125.
+]
+
+{ #category : #test }
 PreciseProfilerSpyTest >> testMetaclassSpiesCreated [
 	packageTested classes do: [ :class |
 		self assert: ( profiler metaclassSpyAt: class ) class
@@ -57,7 +65,7 @@ PreciseProfilerSpyTest >> testMetaclassSpiesCreated [
 		equals: packageTested classes size
 ]
 
-{ #category : #setup }
+{ #category : #test }
 PreciseProfilerSpyTest >> testMethodSpiesCreated [
 	packageTested classes do: [ :class | | classSpy |
 		classSpy := profiler classSpyAt: class .
@@ -68,7 +76,7 @@ PreciseProfilerSpyTest >> testMethodSpiesCreated [
 			equals: class methods size ]
 ]
 
-{ #category : #setup }
+{ #category : #test }
 PreciseProfilerSpyTest >> testPackageSpyCreated [
 	self assert: ( profiler packageSpyAt: packageTested ) class
 		equals: PackageSpy.

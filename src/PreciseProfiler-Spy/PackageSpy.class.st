@@ -27,7 +27,9 @@ PackageSpy >> classSpies [
 
 { #category : #accessing }
 PackageSpy >> classSpyAt: aClass [
-	^ classSpies at: aClass
+	(aClass isMeta)
+		ifTrue: [ ^ (classSpies at: aClass soleInstance) metaclassSpy ] 
+		ifFalse: [ ^ classSpies at: aClass ]
 ]
 
 { #category : #initialization }
