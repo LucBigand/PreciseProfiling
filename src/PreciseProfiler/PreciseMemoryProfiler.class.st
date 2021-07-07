@@ -42,7 +42,7 @@ PreciseMemoryProfiler >> visitArrayNode: aNode [
 
 { #category : #visiting }
 PreciseMemoryProfiler >> visitLiteralArrayNode: aNode [
-	self registerAllocation: aNode contents asArray.
+	"self registerAllocation: aNode contents asArray."
 	^ super visitLiteralArrayNode: aNode
 ]
 
@@ -50,6 +50,6 @@ PreciseMemoryProfiler >> visitLiteralArrayNode: aNode [
 PreciseMemoryProfiler >> visitLiteralValueNode: aNode [
 	| result |
 	result := super visitLiteralValueNode: aNode.
-	self registerAllocation: result.
+	"self registerAllocation: result."
 	^ result
 ]

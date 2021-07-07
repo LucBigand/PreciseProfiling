@@ -43,6 +43,13 @@ PreciseProfilerTest >> testInterpreteColorTranslucent [
 ]
 
 { #category : #test }
+PreciseProfilerTest >> testInterpreteEmptyArray [
+	self
+		assert: (interpreter runOn: CHInterpretable new method: #returnEmptyLiteralArray)
+		equals: #().
+]
+
+{ #category : #test }
 PreciseProfilerTest >> testInterpreteExponentiation [
 	self
 		assert: (interpreter runOn: 5 method: #** andArguments: #(3))

@@ -200,6 +200,11 @@ CHInterpretable >> returnBoolean [
 ]
 
 { #category : #return }
+CHInterpretable >> returnEmptyArray [
+	^ {  }
+]
+
+{ #category : #return }
 CHInterpretable >> returnEmptyLiteralArray [
 	^ #().
 ]

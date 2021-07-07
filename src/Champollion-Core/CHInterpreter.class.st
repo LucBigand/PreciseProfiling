@@ -190,6 +190,7 @@ CHInterpreter >> initializePrimitiveTable [
 		at: 110	put: #primitiveIdentical;
 		at: 111	put: #primitiveClass;
 		at: 148	put: #primitiveShallowCopy;
+		at: 159	put: #primitiveHashMultiply;
 		at: 163	put: #primitiveIsReadOnlyObject;
 		at: 169	put: #primitiveDifferent;
 		at: 170	put: #primitiveValue;
@@ -420,6 +421,11 @@ CHInterpreter >> primitiveFloatMinus [
 CHInterpreter >> primitiveFloatMultiply [
 	self assertFloatArgument.
 	^ (self receiver) * (self argumentAt: 1).
+]
+
+{ #category : #primitives }
+CHInterpreter >> primitiveHashMultiply [
+	^ self receiver hashMultiply
 ]
 
 { #category : #primitives }
