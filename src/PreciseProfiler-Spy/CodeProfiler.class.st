@@ -95,6 +95,13 @@ CodeProfiler >> registerMethodCall: aCompiledMethod [
 		ifFalse: [ (self methodSpyAt: method) incrementNumberOfCalls ]
 ]
 
+{ #category : #running }
+CodeProfiler >> runOn: aReceiver method: aSelector andArguments: args [
+	currentReceiver := aReceiver.
+	self registerMethodCall: (self lookup: aSelector fromClass: aReceiver class).
+	^ super runOn: aReceiver method: aSelector andArguments: args
+]
+
 { #category : #visiting }
 CodeProfiler >> visitMessageNode: aNode [
 	| dict result |
