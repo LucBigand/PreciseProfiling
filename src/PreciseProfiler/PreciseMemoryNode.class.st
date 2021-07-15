@@ -29,7 +29,7 @@ PreciseMemoryNode >> addAllocation: anObject [
 
 { #category : #accessing }
 PreciseMemoryNode >> allocationDict [
-	^ allocationDict get
+	^ allocationDict
 ]
 
 { #category : #printing }
