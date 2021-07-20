@@ -47,7 +47,6 @@ MpProfilingHandler >> beforeMethod [
 MpProfilingHandler >> convertStacks [
 	"Return the stacks with only the relevent methods to determine "
 	| res topMethod |
-	self haltIf: [ proxy ~= proxy handler proxy ].
 	topMethod := proxy methodClass >> proxy selector.
 	res := stacks collect: [ :stack | | convertedStack |
 		convertedStack := OrderedCollection new.
