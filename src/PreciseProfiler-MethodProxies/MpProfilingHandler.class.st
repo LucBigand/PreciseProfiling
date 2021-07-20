@@ -16,7 +16,8 @@ Class {
 	#superclass : #MpHandler,
 	#instVars : [
 		'count',
-		'stacks'
+		'stacks',
+		'stacksDict'
 	],
 	#classVars : [
 		'StackLoopLength'
@@ -35,7 +36,7 @@ MpProfilingHandler >> beforeMethod [
 	self count: self count + 1.
 	
 	"Only do instrumentation once"
-	stacks add: ( thisContext stack collect: [ :each | each copy ] ).
+	stacks add: ( TimedContext newFrom: (thisContext stack collect: [ :each | each copy ]) ).
 	
 	count > 1 ifTrue: [ ^ self ].
 	proxy literalsEvenTheOnesInTheInnerBlocks
@@ -46,22 +47,12 @@ MpProfilingHandler >> beforeMethod [
 { #category : #converting }
 MpProfilingHandler >> convertStacks [
 	"Return the stacks with only the relevent methods to determine "
-	| res topMethod |
+	| topMethod |
 	topMethod := proxy methodClass >> proxy selector.
-	res := stacks collect: [ :stack | | convertedStack |
-		convertedStack := OrderedCollection new.
-		convertedStack add: topMethod.
-		StackLoopLength to: stack size by: StackLoopLength do: [ :i |
-			convertedStack add: (stack at: i) method ].
-		(convertedStack anySatisfy: [ :each | each isDoIt or: each isCompiledBlock ])
-			ifTrue: [ | i |
-				i := 1.
-				[ ((convertedStack at: i) isDoIt or: (convertedStack at: i) isCompiledBlock) ]
-					whileFalse: [ i := i + 1 ].
-				[ convertedStack size >= i ] whileTrue: [ convertedStack removeLast ] ]
-			ifFalse: [ convertedStack := nil ].
-		convertedStack -> stack ].
-	^ res reject: [ :stack | stack key isNil ].
+	stacks do: [ :stack | 
+		stacksDict at: stack put: stack context copy.
+		stack convertContextWithTopMethod: topMethod ].
+	^ stacksDict associationsSelect: [ :each | each key context isNotNil ].
 ]
 
 { #category : #accessing }
@@ -82,6 +73,7 @@ MpProfilingHandler >> initialize [
 	super initialize.
 	count := 0.
 	stacks := Set new.
+	stacksDict := Dictionary new.
 ]
 
 { #category : #evaluating }

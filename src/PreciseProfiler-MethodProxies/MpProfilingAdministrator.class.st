@@ -25,23 +25,22 @@ MpProfilingAdministrator >> display [
 MpProfilingAdministrator >> generateMethodList [
 	methodList := Dictionary new.
 	stacks do: [ :stack |
-		(methodList includesKey: stack first)
-			ifTrue: [ methodList at: stack first update: [ :count | count + 1 ] ]
-			ifFalse: [ methodList at: stack first put: 1 ] ]
+		(methodList includesKey: stack context first)
+			ifTrue: [ methodList at: stack context first update: [ :count | count + 1 ] ]
+			ifFalse: [ methodList at: stack context first put: 1 ] ]
 ]
 
 { #category : #computing }
 MpProfilingAdministrator >> generateNodeTree [
 	rootNode := PreciseRoot new
 		childNodeClass: PreciseMemoryNode.
-	stacks sort: [ :stack1 :stack2 | stack1 size < stack2 size ].
 	stacks do: [ :stack | | currentNode |
 		currentNode := rootNode.
-		stack allButFirst reverseDo: [ :method |
+		stack context allButFirst reverseDo: [ :method |
 			currentNode := currentNode childs
 				detect: [ :node | node method == method ]
 				ifNone: [ currentNode addMethodCall: method. ] ].
-		currentNode addMethodCall: stack first
+		currentNode addMethodCall: stack context first
 	]
 ]
 
@@ -49,7 +48,7 @@ MpProfilingAdministrator >> generateNodeTree [
 MpProfilingAdministrator >> initialize [
 	super initialize.
 	initialMethods := Set new.
-	originalStacks := OrderedCollection new.
+	originalStacks := Dictionary new.
 	stacks := OrderedCollection new.
 ]
 
@@ -77,9 +76,10 @@ MpProfilingAdministrator >> runOn: aBlock [
 		thenDo: [ :handler | | convertedStacks |
 			convertedStacks := handler convertStacks.
 			originalStacks addAll: convertedStacks.
-			stacks addAll: ( convertedStacks collect: [ :stack | stack key ] ) .
-			stacks := stacks select: [ :stack | initialMethods includes: stack last ].
+			stacks addAll: convertedStacks keys.
 			handler count: 0 ].
+	stacks := stacks select: [ :stack | initialMethods includes: stack context last ].
+	stacks sort.
 	self generateMethodList.
 	self generateNodeTree.
 ]

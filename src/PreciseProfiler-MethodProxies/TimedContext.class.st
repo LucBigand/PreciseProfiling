@@ -17,7 +17,9 @@ TimedContext class >> newFrom: aCollection [
 
 { #category : #comparing }
 TimedContext >> <= aTimedContext [
-	^ time <= aTimedContext time
+	^ (context size == aTimedContext context size)
+		ifTrue: [ time <= aTimedContext time ]
+		ifFalse: [ context size < aTimedContext context size ]
 ]
 
 { #category : #accessing }
@@ -33,7 +35,7 @@ TimedContext >> context: aCollection [
 { #category : #converting }
 TimedContext >> convertContextWithTopMethod: aCompiledMethod [
 	| convertedStack stackLoopLength |
-	stackLoopLength := MpProfilingHandler at: #StackLoopLength.
+	stackLoopLength := MpProfilingHandler classPool at: #StackLoopLength.
 	convertedStack := OrderedCollection new.
 	convertedStack add: aCompiledMethod.
 	stackLoopLength to: context size by: stackLoopLength do: [ :i |
