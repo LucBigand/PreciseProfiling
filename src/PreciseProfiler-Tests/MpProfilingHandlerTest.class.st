@@ -18,18 +18,18 @@ MpProfilingHandlerTest >> setUp [
 { #category : #test }
 MpProfilingHandlerTest >> testProfilerHasNotRegisteredScaledDecimalRaisedTo [
 	self assert: (admin stacks noneSatisfy: [ :stack | 
-		stack last == ( ScaledDecimal >> #raisedTo: ) ] )
+		stack context last == ( ScaledDecimal >> #raisedTo: ) ] )
 ]
 
 { #category : #test }
 MpProfilingHandlerTest >> testProfilerHasRegisteredIsIntegerMethodAndItsSenders [
 	self assert: (admin stacks anySatisfy: [ :stack | 
-		stack first = ( Integer >> #isInteger )
-		and: [ stack second = ( Number >> #raisedTo: ) ] ] )
+		stack context first = ( Integer >> #isInteger )
+		and: [ stack context second = ( Number >> #raisedTo: ) ] ] )
 ]
 
 { #category : #test }
 MpProfilingHandlerTest >> testProfilerHasRegisteredSmallIntExponentiationMethod [
 	self assert: (admin stacks anySatisfy: [ :stack | 
-		stack last == ( Number >> #** ) ] )
+		stack context last == ( Number >> #** ) ] )
 ]
