@@ -13,7 +13,6 @@ BaselineOfPreciseProfiler >> baseline: spec [
 			spec package: 'Champollion-Core'.
 			spec package: 'Champollion-Tests' with: [ spec requires: #('Champollion-Core') ].
 			spec package: 'PreciseProfiler' with: [ spec requires: #('Champollion-Core') ].
-			spec package: 'PreciseProfiler-Spy' with: [ spec requires: #('PreciseProfiler') ].
 			
 			spec package: 'MethodProxies'.
 			spec 
@@ -22,7 +21,7 @@ BaselineOfPreciseProfiler >> baseline: spec [
 			
 			spec 
 				package: 'PreciseProfiler-Tests' 
-				with: [ spec requires: #('PreciseProfiler-Spy' 'PreciseProfiler-MethodProxies') ] .
+				with: [ spec requires: #('PreciseProfiler-MethodProxies') ] .
 		
 		]
 ]
