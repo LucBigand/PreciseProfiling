@@ -4,7 +4,7 @@ I am a type of PreciseInterpreter that also registers informations pertaining to
 Class {
 	#name : #PreciseMemoryProfiler,
 	#superclass : #PreciseProfiler,
-	#category : #PreciseProfiler
+	#category : #'PreciseProfiler-Memory'
 }
 
 { #category : #initialization }

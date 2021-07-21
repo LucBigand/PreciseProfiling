@@ -6,7 +6,7 @@ I am myself an empty node, in that I don't register a method. However, all my ch
 Class {
 	#name : #PreciseRoot,
 	#superclass : #AbstractPreciseNode,
-	#category : #PreciseProfiler
+	#category : #'PreciseProfiler-Core'
 }
 
 { #category : #setting }

@@ -13,7 +13,7 @@ Class {
 		'directMemoryUsed',
 		'totalMemoryUsed'
 	],
-	#category : #PreciseProfiler
+	#category : #'PreciseProfiler-Memory'
 }
 
 { #category : #adding }

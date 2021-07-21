@@ -14,7 +14,7 @@ Class {
 		'method',
 		'parent'
 	],
-	#category : #PreciseProfiler
+	#category : #'PreciseProfiler-Core'
 }
 
 { #category : #printing }

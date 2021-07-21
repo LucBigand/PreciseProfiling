@@ -16,7 +16,7 @@ Class {
 		'codePresenter',
 		'code'
 	],
-	#category : #PreciseProfiler
+	#category : #'PreciseProfiler-Core'
 }
 
 { #category : #specs }

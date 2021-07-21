@@ -1,7 +1,7 @@
 Class {
 	#name : #AbstractPreciseProfiler,
 	#superclass : #CHInterpreter,
-	#category : #PreciseProfiler
+	#category : #'PreciseProfiler-Core'
 }
 
 { #category : #registering }

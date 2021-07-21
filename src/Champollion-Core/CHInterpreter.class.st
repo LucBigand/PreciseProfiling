@@ -200,6 +200,7 @@ CHInterpreter >> initializePrimitiveTable [
 		at: 201	put: #primitiveBlockValue;
 		at: 202	put: #primitiveBlockValueWithArg;
 		at: 207	put: #primitiveBlockValue;
+		at: 240	put: #primitiveUTCMicrosecondsClock;
 		at: 541	put: #primitiveFloatAdd;
 		at: 542	put: #primitiveFloatMinus;
 		at: 547	put: #primitiveFloatEqualsThan;
@@ -211,7 +212,8 @@ CHInterpreter >> initializePrimitiveTable [
 		at: 'primitiveCompareString' put: #primitiveCompareString ;
 		at: 'primitiveFindSubstring' put: #primitiveFindSubstring;
 		at: 'primitiveIndexOfAsciiInString' put: #primitiveIndexOfAsciiInString ;
-		at: 'primitiveStringHash' put: #primitiveStringHash
+		at: 'primitiveStringHash' put: #primitiveStringHash;
+		at: 'primitiveTimezoneOffset' put: #primitiveTimezoneOffset
 ]
 
 { #category : #accessing }
@@ -620,6 +622,16 @@ CHInterpreter >> primitiveStringHash [
 { #category : #primitives }
 CHInterpreter >> primitiveTimesTwoPower [
 	^ (self receiver) timesTwoPower: (self argumentAt: 1).
+]
+
+{ #category : #primitives }
+CHInterpreter >> primitiveTimezoneOffset [
+	^ self receiver primOffset
+]
+
+{ #category : #primitives }
+CHInterpreter >> primitiveUTCMicrosecondsClock [
+	^ self receiver primUTCMicrosecondsClock
 ]
 
 { #category : #primitives }

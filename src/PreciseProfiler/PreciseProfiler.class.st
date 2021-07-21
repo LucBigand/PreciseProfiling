@@ -14,7 +14,7 @@ Class {
 		'currentNode',
 		'nextNode'
 	],
-	#category : #PreciseProfiler
+	#category : #'PreciseProfiler-Core'
 }
 
 { #category : #display }

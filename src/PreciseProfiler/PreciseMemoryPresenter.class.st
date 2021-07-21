@@ -30,7 +30,7 @@ Class {
 		'windowHeight',
 		'windowLength'
 	],
-	#category : #PreciseProfiler
+	#category : #'PreciseProfiler-Memory'
 }
 
 { #category : #'class initialization' }

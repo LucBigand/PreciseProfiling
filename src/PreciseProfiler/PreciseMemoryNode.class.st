@@ -16,7 +16,7 @@ Class {
 		'updated',
 		'allocationDict'
 	],
-	#category : #PreciseProfiler
+	#category : #'PreciseProfiler-Memory'
 }
 
 { #category : #adding }
