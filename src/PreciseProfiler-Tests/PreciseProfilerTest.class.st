@@ -107,3 +107,12 @@ PreciseProfilerTest >> testInterpreteSmallIntegerAddition [
 		= (Dictionary newFrom: { 
 			SmallInteger>>#+ -> 1})
 ]
+
+{ #category : #test }
+PreciseProfilerTest >> testInterpreteTimeNow [
+	self
+		assert: (interpreter
+			runOn: Time 
+			method: #now )
+		<= Time now
+]

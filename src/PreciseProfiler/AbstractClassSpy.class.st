@@ -1,3 +1,10 @@
+"
+I contain the profiling data for a class spy
+
+    Instance Variables
+	methodSpies:	 A list of method spies, each corresponding of a method of the class being spied
+	superclassSpy: The class spy corresponding to the superclass of the class being spied
+"
 Class {
 	#name : #AbstractClassSpy,
 	#superclass : #Object,

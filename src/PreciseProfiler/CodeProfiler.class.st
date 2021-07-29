@@ -1,3 +1,9 @@
+"
+I am a profiler that keeps a trace of all the methods called in one or multiple packages, as well as informations concerning the senders of each method calls.
+
+  Instance Variables
+	packageSpies: A list of package spies
+"
 Class {
 	#name : #CodeProfiler,
 	#superclass : #AbstractPreciseProfiler,
@@ -11,6 +17,7 @@ Class {
 
 { #category : #setting }
 CodeProfiler >> addPackage: aPackage [
+	"Add a package to the list of packages being studied"
 	packageSpies at: aPackage put: (PackageSpy new initializeWith: aPackage)
 ]
 
@@ -73,6 +80,7 @@ CodeProfiler >> packageSpyAt: aPackage [
 
 { #category : #registering }
 CodeProfiler >> registerMethodCall: aCompiledMethod [
+	"Verifies whether or not the compiled method is currently being spied on, and register information pertaining to the context if its execution id that is the case"
 	| method previousMethod packages |
 	method := (aCompiledMethod classBinding value == CHBlock)
 		ifTrue: [ FullBlockClosure >> (aCompiledMethod selector) ]

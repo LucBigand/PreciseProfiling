@@ -32,21 +32,25 @@ MpProfilingHandler class >> initialize [
 
 { #category : #evaluating }
 MpProfilingHandler >> beforeMethod [
+	"Increments the method call count and propagates the handlers to the methods that could 
+	potentially be called by this method"
 
-	self count: self count + 1.
+	proxy isActiveInExecutionStack traceCr.
+	self haltOnce.
+	"self count: self count + 1."
 	
 	"Only do instrumentation once"
-	stacks add: ( TimedContext newFrom: (thisContext stack collect: [ :each | each copy ]) ).
+	"stacks add: ( TimedContext newFrom: (thisContext stack collect: [ :each | each copy ]) ).
 	
 	count > 1 ifTrue: [ ^ self ].
 	proxy literalsEvenTheOnesInTheInnerBlocks
 		select: [ :literal | literal isSymbol ]
-		thenDo: [ :potentialSelector | self instrumentImplementorsOf: potentialSelector ]
+		thenDo: [ :potentialSelector | self instrumentImplementorsOf: potentialSelector ]"
 ]
 
 { #category : #converting }
 MpProfilingHandler >> convertStacks [
-	"Return the stacks with only the relevent methods to determine "
+	"Return the stacks with only the methods assumed to be studied by a profiling administrator"
 	| topMethod |
 	topMethod := proxy methodClass >> proxy selector.
 	stacks do: [ :stack | 
@@ -78,6 +82,7 @@ MpProfilingHandler >> initialize [
 
 { #category : #evaluating }
 MpProfilingHandler >> instrumentImplementorsOf: potentialSelector [
+	"Add a MpProfilingHandler to the methods that could potentially be called by this method."
 	potentialSelector implementors
 		select: [ :method | method class == CompiledMethod ] 
 		thenDo: [ :method | | newProxy |

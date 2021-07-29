@@ -1,3 +1,6 @@
+"
+I am an abstract class for profilers that keep a trace of a program's method calls by using an abstract syntaxic tree interpreter.
+"
 Class {
 	#name : #AbstractPreciseProfiler,
 	#superclass : #CHInterpreter,
@@ -10,8 +13,8 @@ AbstractPreciseProfiler >> registerMethodCall: aMethod [
 ]
 
 { #category : #running }
-AbstractPreciseProfiler >> runOn: aClass method: aSelector [
-	^ self runOn: aClass method: aSelector andArguments: #()
+AbstractPreciseProfiler >> runOn: aReceiver method: aSelector [
+	^ self runOn: aReceiver method: aSelector andArguments: #()
 ]
 
 { #category : #running }

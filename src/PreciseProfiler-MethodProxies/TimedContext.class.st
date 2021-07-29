@@ -1,9 +1,17 @@
+"
+I am a class that registers the context and time of a method's execution
+
+Instance variables
+	time : an integer representing the time of a method's execution
+	context : the calling context of this method
+"
 Class {
 	#name : #TimedContext,
 	#superclass : #Object,
 	#instVars : [
 		'time',
-		'context'
+		'context',
+		'converted'
 	],
 	#category : #'PreciseProfiler-MethodProxies'
 }
@@ -34,7 +42,10 @@ TimedContext >> context: aCollection [
 
 { #category : #converting }
 TimedContext >> convertContextWithTopMethod: aCompiledMethod [
+	"Convert the method context as to only keep the methods that are assumed to be studied by a
+	MpProfilingAdministrator, and then add a new top method"
 	| convertedStack stackLoopLength |
+	converted ifTrue: [ ^ self ].
 	stackLoopLength := MpProfilingHandler classPool at: #StackLoopLength.
 	convertedStack := OrderedCollection new.
 	convertedStack add: aCompiledMethod.
@@ -47,12 +58,14 @@ TimedContext >> convertContextWithTopMethod: aCompiledMethod [
 				whileFalse: [ i := i + 1 ].
 			[ convertedStack size >= i ] whileTrue: [ convertedStack removeLast ] ]
 		ifFalse: [ convertedStack := nil ].
-	context := convertedStack
+	context := convertedStack.
+	converted := true.
 ]
 
 { #category : #initialization }
 TimedContext >> initialize [
 	super initialize.
+	converted := false.
 	time := Time primUTCMicrosecondsClock
 ]
 

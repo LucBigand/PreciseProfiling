@@ -1,3 +1,9 @@
+"
+I contain the profiling data for a package
+
+    Instance Variables
+	classSpies: A list of class spies, each corresponding to a class of the package being spied
+"
 Class {
 	#name : #PackageSpy,
 	#superclass : #Object,

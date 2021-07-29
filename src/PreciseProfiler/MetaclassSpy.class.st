@@ -1,3 +1,6 @@
+"
+I am a metaclass spy
+"
 Class {
 	#name : #MetaclassSpy,
 	#superclass : #AbstractClassSpy,

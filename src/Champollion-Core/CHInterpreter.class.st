@@ -735,8 +735,11 @@ CHInterpreter >> visitClassVariableNode: aNode [
 	lookupClass := self receiver isClass
 		ifTrue: [ self receiver ] 
 		ifFalse: [ self receiver class ].
-	[ lookupClass classPool includesKey: aNode name ] whileFalse: 
-		[ lookupClass := lookupClass superclass ].
+	[ lookupClass classPool includesKey: aNode name ] whileFalse: [ 
+		lookupClass sharedPools 
+			detect: [ :each | each includesKey: aNode name ]
+			ifFound: [ :class | ^ class classPool at: aNode name ].
+		lookupClass := lookupClass superclass ].
 	^ lookupClass classPool at: aNode name
 ]
 

@@ -1,3 +1,12 @@
+"
+I contain the profiling data for a method spy. I register information pertaining to the methods that call and are called by this method.
+ 
+    Instance Variables
+	incomingCalls: A set of all the methods that call this method
+	numberOfCalls:	The number of time this method has been called during the execution of the code being profiled by the code profiler.
+	outgoingCalls: A set of all the methods called by this method
+	receivers: A set of all the objects that have initialized a call to this method
+"
 Class {
 	#name : #MethodSpy,
 	#superclass : #Object,
