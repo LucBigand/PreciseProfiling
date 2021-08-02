@@ -36,16 +36,15 @@ MpProfilingHandler >> beforeMethod [
 	potentially be called by this method"
 
 	proxy isActiveInExecutionStack traceCr.
-	self haltOnce.
-	"self count: self count + 1."
+	self count: self count + 1.
 	
 	"Only do instrumentation once"
-	"stacks add: ( TimedContext newFrom: (thisContext stack collect: [ :each | each copy ]) ).
+	stacks add: ( TimedContext newFrom: (thisContext stack collect: [ :each | each copy ]) ).
 	
 	count > 1 ifTrue: [ ^ self ].
 	proxy literalsEvenTheOnesInTheInnerBlocks
 		select: [ :literal | literal isSymbol ]
-		thenDo: [ :potentialSelector | self instrumentImplementorsOf: potentialSelector ]"
+		thenDo: [ :potentialSelector | self instrumentImplementorsOf: potentialSelector ]
 ]
 
 { #category : #converting }
