@@ -1,17 +1,32 @@
 Class {
 	#name : #MpAllocProfilerByEphemeronHandler,
-	#superclass : #MpAllocationProfilerHandler,
+	#superclass : #MpHandler,
+	#instVars : [
+		'classesSpied',
+		'ephemerons'
+	],
 	#category : #EphemeronTest
 }
+
+{ #category : #setting }
+MpAllocProfilerByEphemeronHandler >> addClass: aClass [
+	classesSpied add: aClass
+]
 
 { #category : #evaluating }
 MpAllocProfilerByEphemeronHandler >> afterExecutionWithReceiver: receiver arguments: arguments returnValue: returnValue [
 	| ephemeron |
+	( classesSpied includes: receiver ) ifFalse: [ ^ returnValue ].
 	ephemeron := LogGCEphemeron new
    		key: returnValue;
   		yourself.
-	^ super
-		afterExecutionWithReceiver: receiver 
-		arguments: arguments  
-		returnValue: ephemeron
+	ephemerons add: ephemeron.
+	^ returnValue
+]
+
+{ #category : #initialization }
+MpAllocProfilerByEphemeronHandler >> initialize [
+	super initialize.
+	classesSpied := Set new.
+	ephemerons := Set new.
 ]

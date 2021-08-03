@@ -24,3 +24,8 @@ LogGCEphemeron >> mourn [
 	key printString traceCr.
 	wasGarbageCollected := true
 ]
+
+{ #category : #accessing }
+LogGCEphemeron >> wasGarbageCollected [
+	^ wasGarbageCollected 
+]
