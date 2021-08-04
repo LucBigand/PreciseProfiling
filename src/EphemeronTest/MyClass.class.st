@@ -1,3 +1,6 @@
+"
+Class used to test the implementation of ephemerons
+"
 Class {
 	#name : #MyClass,
 	#superclass : #Object,
@@ -9,8 +12,8 @@ Class {
 
 { #category : #creating }
 MyClass >> createFigures [
-	1 to: 10 do: [ :i | figures add: (Rectangle origin: 0@0 corner: 100@100 ) ].
-	1 to: 5 do: [ :i | Rectangle origin: 0@0 corner: 100@100 ]
+	1 to: 10 do: [ :i | figures add: (Rectangle origin: 0@0 corner: i@i ) ].
+	11 to: 15 do: [ :i | Rectangle origin: 0@0 corner: i@i ]
 ]
 
 { #category : #initialization }

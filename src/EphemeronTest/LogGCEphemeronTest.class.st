@@ -13,6 +13,7 @@ LogGCEphemeronTest >> testEphemeronShowsGarbageCollection [
    		key: obj;
   		yourself.
 	obj := nil.
+	5 timesRepeat: [ Smalltalk garbageCollect ].
 	self 
 		assert: ephemeron wasGarbageCollected
 		equals: true
@@ -25,6 +26,7 @@ LogGCEphemeronTest >> testEphemeronShowsNoGarbageCollection [
 	ephemeron := LogGCEphemeron new
    		key: obj;
   		yourself.
+	5 timesRepeat: [ Smalltalk garbageCollect ].
 	self 
 		assert: ephemeron wasGarbageCollected
 		equals: false

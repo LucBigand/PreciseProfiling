@@ -10,7 +10,7 @@ EphemeronProfilerTest >> testProfilingOfObjectCreationIsAccurate [
 	| obj block handler |
 	
 	obj := MyClass new.
-	block := [ MyClass new createFigures ].
+	block := [ obj createFigures ].
 	
 	handler := MpAllocProfilerByEphemeronHandler new
 		addClass: Rectangle;
@@ -20,6 +20,8 @@ EphemeronProfilerTest >> testProfilingOfObjectCreationIsAccurate [
 	  block value.
 	  handler proxy uninstall ] valueUninterruptably.
 
+	5 timesRepeat: [ Smalltalk garbageCollect ].
+
 	self assert: handler garbageCollectedObjects size equals: 5.
-	self assert: handler notGarbageCollectedObject size equals: 10.
+	self assert: handler notGarbageCollectedObjects size equals: 10.
 ]
