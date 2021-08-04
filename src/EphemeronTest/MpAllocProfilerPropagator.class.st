@@ -1,5 +1,5 @@
 Class {
-	#name : #MpAllocationPropagator,
+	#name : #MpAllocProfilerPropagator,
 	#superclass : #MpHandler,
 	#instVars : [
 		'executed',
@@ -9,7 +9,7 @@ Class {
 }
 
 { #category : #evaluating }
-MpAllocationPropagator >> beforeMethod [
+MpAllocProfilerPropagator >> beforeMethod [
 	| literals |
 	executed ifTrue: [ ^ self ].
 	profiler ifNil: [ self initializeProfiler ].
@@ -25,18 +25,18 @@ MpAllocationPropagator >> beforeMethod [
 ]
 
 { #category : #initialization }
-MpAllocationPropagator >> initialize [
+MpAllocProfilerPropagator >> initialize [
 	super initialize.
 	executed := false
 ]
 
 { #category : #setting }
-MpAllocationPropagator >> initializeProfiler [
+MpAllocProfilerPropagator >> initializeProfiler [
 	profiler := MpAllocProfilerByEphemeronHandler new.
 ]
 
 { #category : #evaluating }
-MpAllocationPropagator >> instrumentImplementorsOf: potentialSelector [
+MpAllocProfilerPropagator >> instrumentImplementorsOf: potentialSelector [
 	"Add a MpProfilingHandler to the methods that could potentially be called by this method."
 	potentialSelector implementors
 		select: [ :method | method class == CompiledMethod ] 
@@ -50,6 +50,6 @@ MpAllocationPropagator >> instrumentImplementorsOf: potentialSelector [
 ]
 
 { #category : #setting }
-MpAllocationPropagator >> profiler: aProfiler [
+MpAllocProfilerPropagator >> profiler: aProfiler [
 	profiler := aProfiler
 ]

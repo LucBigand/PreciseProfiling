@@ -24,9 +24,27 @@ MpAllocProfilerByEphemeronHandler >> afterExecutionWithReceiver: receiver argume
 	^ returnValue
 ]
 
+{ #category : #accessing }
+MpAllocProfilerByEphemeronHandler >> garbageCollectedObjects [
+	^ ephemerons select: [ :ephemeron | ephemeron wasGarbageCollected ]
+]
+
 { #category : #initialization }
 MpAllocProfilerByEphemeronHandler >> initialize [
 	super initialize.
 	classesSpied := Set new.
 	ephemerons := Set new.
+	proxy := MpMethodProxy
+		onMethod: Behavior >> #basicNew
+		handler: self
+]
+
+{ #category : #accessing }
+MpAllocProfilerByEphemeronHandler >> notGarbageCollectedObject [
+	^ ephemerons reject: [ :ephemeron | ephemeron wasGarbageCollected ]
+]
+
+{ #category : #accessing }
+MpAllocProfilerByEphemeronHandler >> proxy [
+	^ proxy
 ]
