@@ -298,10 +298,10 @@ PreciseMemoryPresenter >> initialize [
 ]
 
 { #category : #initialization }
-PreciseMemoryPresenter >> initializeWith: aPreciseMemoryInterpreter [
+PreciseMemoryPresenter >> initializeWith: aPreciseMemoryProfiler [
 	| maxMemory |
-	interpreter := aPreciseMemoryInterpreter.
-	maxMemory := (aPreciseMemoryInterpreter rootNode childs collect: [ :node | node memoryUsed ]) max.
+	interpreter := aPreciseMemoryProfiler.
+	maxMemory := (aPreciseMemoryProfiler rootNode childs collect: [ :node | node memoryUsed ]) max.
 	scale := NSScale linear
 		range: { Color blue . Color red }; 
 		domain: { 0 . maxMemory }.

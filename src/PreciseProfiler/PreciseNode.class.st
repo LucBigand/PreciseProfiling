@@ -17,6 +17,12 @@ Class {
 	#category : #'PreciseProfiler-Core'
 }
 
+{ #category : #accessing }
+PreciseNode >> allocationDict [  
+	"Workaround to get non-memory node displayed by PreciseMemoryPresenter"
+	^ AllocationDictionary new
+]
+
 { #category : #printing }
 PreciseNode >> description [
 	method ifNil: [ ^ '' ].
@@ -33,6 +39,20 @@ PreciseNode >> incrementNumberOfCalls [
 PreciseNode >> initialize [
 	super initialize.
 	numberOfCalls := 1.
+]
+
+{ #category : #printing }
+PreciseNode >> longDescription [
+	"Returns a string that contains information related to the classes, number and used memory of allocated object within this method context"
+	method ifNil: [ ^ '' ].
+	^ '<' , method classBinding value asString, '>>', method selector asString, '>', String cr,
+		'# Executions: ', numberOfCalls asString
+]
+
+{ #category : #accessing }
+PreciseNode >> memoryUsed [ 
+	"Workaround to get non-memory node displayed by PreciseMemoryPresenter"
+	^ 0
 ]
 
 { #category : #accessing }

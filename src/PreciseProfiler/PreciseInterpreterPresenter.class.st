@@ -127,7 +127,7 @@ PreciseInterpreterPresenter >> initializeWindow: aWindowPresenter [
 		initialExtent: 750@500;
 		toolbar: (self newToolbar
 			addItem: (self newToolbarButton
-				label: 'Memory usage';
+				label: 'Graphical display';
 				icon: (self application iconNamed: #smallAdd);
 				action: [ PreciseMemoryPresenter openOn: interpreter ];
 				yourself );
