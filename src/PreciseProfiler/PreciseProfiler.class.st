@@ -5,6 +5,12 @@ I am an ast interpreter that keeps a trace of all the method contexts with a tre
 	currentNode:		The node corresponding to the method context currently visited. Returns the PreciseRoot once the tree has been computed
 	methodList:		A list of all the methods called
 	nextNode:		The calling context that will potentially be visited next (private)
+			
+Example
+
+profiler := PreciseProfiler new.
+profiler runOn: 3 method: #** andArguments: #(5).
+profiler display.
 "
 Class {
 	#name : #PreciseProfiler,

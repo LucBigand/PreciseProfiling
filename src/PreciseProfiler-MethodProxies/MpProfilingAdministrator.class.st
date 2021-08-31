@@ -12,6 +12,13 @@ I oversee the profiling of a block of code by using method proxies
 	rootNode:		The root node of the generated method context tree
 	stacks:		The converted stacks of the method contexts captured during the execution of the
 			methods studied
+			
+Example
+
+admin := MpProfilingAdministrator new.
+admin addMethod: Time class >> #now.
+admin runOn: [ Time now ].
+admin display.
 "
 Class {
 	#name : #MpProfilingAdministrator,

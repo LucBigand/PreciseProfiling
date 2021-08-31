@@ -1,5 +1,11 @@
 "
 I am a type of PreciseInterpreter that also registers informations pertaining to the objects that the program I am running has allocated : their class, number, and memory used. My tree of nodes is composed of a PreciseRoot and instances of PreciseMemoryNode
+
+Example :
+
+profiler := PreciseMemoryProfiler new.
+profiler runOn: Time method: #now.
+profiler display.
 "
 Class {
 	#name : #PreciseMemoryProfiler,
