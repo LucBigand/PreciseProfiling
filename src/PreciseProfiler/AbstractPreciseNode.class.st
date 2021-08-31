@@ -12,7 +12,7 @@ Class {
 		'childs',
 		'childNodeClass'
 	],
-	#category : #PreciseProfiler
+	#category : #'PreciseProfiler-Core'
 }
 
 { #category : #adding }

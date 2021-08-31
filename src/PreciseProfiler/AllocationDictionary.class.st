@@ -12,7 +12,7 @@ Class {
 	#instVars : [
 		'dictionary'
 	],
-	#category : #PreciseProfiler
+	#category : #'PreciseProfiler-Memory'
 }
 
 { #category : #adding }

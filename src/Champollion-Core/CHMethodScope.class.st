@@ -1,3 +1,17 @@
+"
+Internal representation of a method context within CHInterpreter (AST interpretation)
+
+Public API and Key Messages
+
+- write:withValue:
+- read:
+- homeFrame
+
+    Instance Variables
+	parentScope:		Instance of CHInstanceScope associated with the receiver
+	receiver:		Receiver of the method
+	variables:		Dictionary that associates arguments and variable names to their values in the profiled program's simulated execution
+"
 Class {
 	#name : #CHMethodScope,
 	#superclass : #Object,
@@ -42,8 +56,8 @@ CHMethodScope >> parentScope: anObject [
 { #category : #accessing }
 CHMethodScope >> read: aString [
 	(self includesKey: aString)
-		ifTrue: [ ^ variables at: aString ] 
-		ifFalse: [ ^ self homeFrame read: aString ] .
+		ifTrue: [ ^ variables at: aString ].
+	^ receiver perform: aString 
 ]
 
 { #category : #accessing }
@@ -59,6 +73,8 @@ CHMethodScope >> receiver: aCHInterpretable [
 { #category : #accessing }
 CHMethodScope >> scopeDefining: aString [
 	(variables includesKey: aString)
+		ifTrue: [ ^ self ].
+	((receiver class == CHBlock) and: (FullBlockClosure allInstVarNames includes: aString))
 		ifTrue: [ ^ self ].
 	^ self parentScope scopeDefining: aString.
 ]

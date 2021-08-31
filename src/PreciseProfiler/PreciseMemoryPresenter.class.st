@@ -30,7 +30,7 @@ Class {
 		'windowHeight',
 		'windowLength'
 	],
-	#category : #PreciseProfiler
+	#category : #'PreciseProfiler-Memory'
 }
 
 { #category : #'class initialization' }
@@ -52,7 +52,7 @@ PreciseMemoryPresenter class >> openOn: aPreciseMemoryInterpreter [
 PreciseMemoryPresenter >> auxComputeMaxNumberOfAllocations: aPreciseMemoryNode [
 	"An auxiliary method called by #computeMaxNumberOfAllocations."
 	| res nbAllocPerClass |
-	nbAllocPerClass := (aPreciseMemoryNode allocationDict values collect: [ :entry | entry directAllocations ]).
+	nbAllocPerClass := (aPreciseMemoryNode allocationDict get values collect: [ :entry | entry directAllocations ]).
 	res := nbAllocPerClass 
 		ifEmpty: [ 0 ]
 		ifNotEmpty: [ nbAllocPerClass max ].
@@ -140,7 +140,7 @@ PreciseMemoryPresenter >> createBoxFor: aPreciseMemoryNode [
 	"Create a box representing aPreciseMemoryNode, with popups detailing related informations"
 	| outterBox allocDict |
 	outterBox := RSGroup new.
-	allocDict := aPreciseMemoryNode allocationDict.
+	allocDict := aPreciseMemoryNode allocationDict get.
 	allocDict keysDo: [ :class | | entry innerBox |
 		entry := allocDict at: class.
 		(entry directAllocations > 0) ifTrue: [ 
@@ -154,7 +154,7 @@ PreciseMemoryPresenter >> createBoxFor: aPreciseMemoryNode [
 	RSGridLayout on: outterBox.
 	outterBox := outterBox asShape.
 	outterBox padding: 3;
-		propertyAt: #classes put: aPreciseMemoryNode allocationDict keys;
+		propertyAt: #classes put: aPreciseMemoryNode allocationDict get keys;
 		propertyAt: #hiddenInnerNodes put: OrderedCollection new;
 		color: (scale scale: aPreciseMemoryNode memoryUsed) ;
 		when: RSMouseLeftClick do: [ :evt | aPreciseMemoryNode method browse ];
@@ -222,7 +222,7 @@ PreciseMemoryPresenter >> displayClassList [
 	interpreter rootNode childs allButFirstDo: [ :memoryNode | | allocationDict2 |
 		allocationDict2 := memoryNode allocationDict.
 		allocationDict addFromDictionary: allocationDict2 ].
-	keys := allocationDict keys sorted: [ :a :b |
+	keys := allocationDict get keys sorted: [ :a :b |
 		(allocationDict at: a) totalAllocations > (allocationDict at: b) totalAllocations ].
 	keys do: [ :class | | entry |
 		entry := allocationDict at: class.
@@ -298,10 +298,10 @@ PreciseMemoryPresenter >> initialize [
 ]
 
 { #category : #initialization }
-PreciseMemoryPresenter >> initializeWith: aPreciseMemoryInterpreter [
+PreciseMemoryPresenter >> initializeWith: aPreciseMemoryProfiler [
 	| maxMemory |
-	interpreter := aPreciseMemoryInterpreter.
-	maxMemory := (aPreciseMemoryInterpreter rootNode childs collect: [ :node | node memoryUsed ]) max.
+	interpreter := aPreciseMemoryProfiler.
+	maxMemory := (aPreciseMemoryProfiler rootNode childs collect: [ :node | node memoryUsed ]) max.
 	scale := NSScale linear
 		range: { Color blue . Color red }; 
 		domain: { 0 . maxMemory }.

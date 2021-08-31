@@ -1,24 +1,30 @@
 Class {
-	#name : #PreciseInterpreterPresenterTest,
+	#name : #PreciseProfilerPresenterTest,
 	#superclass : #TestCase,
 	#instVars : [
-		'window'
+		'window',
+		'profiler'
 	],
 	#category : #'PreciseProfiler-Tests'
 }
 
+{ #category : #setup }
+PreciseProfilerPresenterTest >> setUp [
+	super setUp.
+	profiler := PreciseProfiler new
+]
+
 { #category : #test }
-PreciseInterpreterPresenterTest >> tearDown [
+PreciseProfilerPresenterTest >> tearDown [
 	super tearDown.
 	window ifNotNil: [ window close ]
 ]
 
 { #category : #test }
-PreciseInterpreterPresenterTest >> testSelectingElementInTheListUpdatesCodePresenter [
-	| interpreter presenter methodTree |
-	interpreter := PreciseInterpreter new.
-	interpreter runOn: 5 method: #+ andArguments: #(3).
-	window := interpreter display.
+PreciseProfilerPresenterTest >> testSelectingElementInTheListUpdatesCodePresenter [
+	| presenter methodTree |
+	profiler runOn: 5 method: #+ andArguments: #(3).
+	window := profiler display.
 	presenter := window presenter.
 	methodTree := presenter mainPresenter selectedPage activePresenter.
 	
@@ -28,11 +34,10 @@ PreciseInterpreterPresenterTest >> testSelectingElementInTheListUpdatesCodePrese
 ]
 
 { #category : #test }
-PreciseInterpreterPresenterTest >> testSmallIntegerAddition [
-	| interpreter presenter methodTree |
-	interpreter := PreciseInterpreter new.
-	interpreter runOn: 5 method: #+ andArguments: #(3).
-	window := interpreter display.
+PreciseProfilerPresenterTest >> testSmallIntegerAddition [
+	| presenter methodTree |
+	profiler runOn: 5 method: #+ andArguments: #(3).
+	window := profiler display.
 	presenter := window presenter.
 	methodTree := presenter mainPresenter selectedPage activePresenter.
 	self assert: ( methodTree roots at: 1 ) method

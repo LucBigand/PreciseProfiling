@@ -10,9 +10,35 @@ Class {
 	#category : #'Champollion-Tests'
 }
 
+{ #category : #setting }
+CHInterpretable >> addToX: anInteger [
+	x := x + anInteger
+]
+
+{ #category : #'error signalling' }
+CHInterpretable >> blockOnDoWithError [
+	| res |
+	[ res := 0. self errorSignal ] on: Error do: [ res := 1 ].
+	^ res
+]
+
+{ #category : #'error signalling' }
+CHInterpretable >> blockOnDoWithNoError [
+	| res |
+	[ res := 0 ] on: Error do: [ res := 1 ].
+	^ res
+]
+
 { #category : #return }
 CHInterpretable >> callingFailingPrimitive [
 	^ self failingPrimitive
+]
+
+{ #category : #return }
+CHInterpretable >> cascadeMessage [
+	^ self store100intoX;
+		addToX: 200;
+		x.
 ]
 
 { #category : #setting }
@@ -38,6 +64,11 @@ CHInterpretable >> collaborator: anObject [
 { #category : #return }
 CHInterpretable >> doesSuperLookupFromSuperclass [
 	^ super isInSuperclass.
+]
+
+{ #category : #'error signalling' }
+CHInterpretable >> errorSignal [
+	Error signal
 ]
 
 { #category : #accessing }
@@ -105,6 +136,36 @@ CHInterpretable >> next [
 	^ next.
 ]
 
+{ #category : #display }
+CHInterpretable >> openRoassalCanvas [
+
+	| canvas scale r aNumber circle label composite |
+	canvas := RSCanvas new.
+	scale := NSScale category20c.
+
+	r := Random seed: 42.
+	81 timesRepeat: [ 
+		aNumber := r nextInteger: 10.
+		circle := RSCircle new
+			          size: 30;
+			          color: (scale scale: aNumber).
+		label := RSLabel new
+			         color: Color black;
+			         text: aNumber.
+		composite := { 
+			             circle.
+			             label } asGroup asShapeFor: aNumber.
+		canvas add: composite ].
+
+	RSGridLayout new
+		lineItemsCount: 9;
+		on: canvas nodes.
+
+	canvas @ RSCanvasController.
+	canvas open.
+	canvas close.
+]
+
 { #category : #return }
 CHInterpretable >> overridenMethod [
 	^ super overridenMethod
@@ -139,6 +200,11 @@ CHInterpretable >> returnBoolean [
 ]
 
 { #category : #return }
+CHInterpretable >> returnEmptyArray [
+	^ {  }
+]
+
+{ #category : #return }
 CHInterpretable >> returnEmptyLiteralArray [
 	^ #().
 ]
@@ -169,6 +235,16 @@ CHInterpretable >> returnInteger [
 { #category : #return }
 CHInterpretable >> returnRecursiveLiteralArray [
 	^ #(true 1 #('ahah'))
+]
+
+{ #category : #return }
+CHInterpretable >> returnResultOfBlockWithArgument [
+	^ #(1 2 3 4 5) collect: [ :each | 2 * each ]
+]
+
+{ #category : #return }
+CHInterpretable >> returnResultOfNestedBlocksWithArgument [
+	^ #( 1 2 3 ) collect: [ :x1 | (x1 to: (x1 + 2)) collect: [ :x2 | 2 * x2] ]
 ]
 
 { #category : #return }

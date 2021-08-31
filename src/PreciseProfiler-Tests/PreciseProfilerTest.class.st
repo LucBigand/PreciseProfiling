@@ -1,5 +1,5 @@
 Class {
-	#name : #PreciseInterpreterTest,
+	#name : #PreciseProfilerTest,
 	#superclass : #TestCase,
 	#instVars : [
 		'interpreter'
@@ -8,21 +8,21 @@ Class {
 }
 
 { #category : #setup }
-PreciseInterpreterTest >> setUp [
+PreciseProfilerTest >> setUp [
 	super setUp.
-	interpreter := PreciseInterpreter new.
+	interpreter := PreciseProfiler new.
 	
 ]
 
 { #category : #test }
-PreciseInterpreterTest >> testInterpreteBiggerExponentiation [
+PreciseProfilerTest >> testInterpreteBiggerExponentiation [
 	self
 		assert: (interpreter runOn: 5 method: #** andArguments: #(300))
 		equals: (5 ** 300).
 ]
 
 { #category : #test }
-PreciseInterpreterTest >> testInterpreteCHInterpretableLastExpression [
+PreciseProfilerTest >> testInterpreteCHInterpretableLastExpression [
 	self
 		assert: (interpreter runOn: (CHInterpretable new) method: #lastExpression andArguments: #() )
 		equals: 43.
@@ -36,62 +36,69 @@ PreciseInterpreterTest >> testInterpreteCHInterpretableLastExpression [
 ]
 
 { #category : #test }
-PreciseInterpreterTest >> testInterpreteColorTranslucent [
+PreciseProfilerTest >> testInterpreteColorTranslucent [
 	self
 		assert: (interpreter runOn: Color red method: #translucent)
 		equals: Color red translucent.
 ]
 
 { #category : #test }
-PreciseInterpreterTest >> testInterpreteExponentiation [
+PreciseProfilerTest >> testInterpreteEmptyArray [
+	self
+		assert: (interpreter runOn: CHInterpretable new method: #returnEmptyLiteralArray)
+		equals: #().
+]
+
+{ #category : #test }
+PreciseProfilerTest >> testInterpreteExponentiation [
 	self
 		assert: (interpreter runOn: 5 method: #** andArguments: #(3))
 		equals: 125.
 ]
 
 { #category : #test }
-PreciseInterpreterTest >> testInterpreteFactorial1 [
+PreciseProfilerTest >> testInterpreteFactorial1 [
 	self
 		assert: (interpreter runOn: 1 method: #factorial)
 		equals: 1.
 ]
 
 { #category : #test }
-PreciseInterpreterTest >> testInterpreteFactorial5 [
+PreciseProfilerTest >> testInterpreteFactorial5 [
 	self
 		assert: (interpreter runOn: 5 method: #factorial)
 		equals: 120.
 ]
 
 { #category : #test }
-PreciseInterpreterTest >> testInterpreteJavadocClass [
+PreciseProfilerTest >> testInterpreteJavadocClass [
 	self
-		assert: ((interpreter
+		assert: (interpreter
 			runOn: Javadoc 
 			method: #runOnClass: 
 			andArguments: { SmallInteger })
-				beginsWith: 'Class : SmallInteger')
+		equals: (Javadoc runOnClass: SmallInteger)
 ]
 
 { #category : #test }
-PreciseInterpreterTest >> testInterpreteJavadocPackage [
+PreciseProfilerTest >> testInterpreteJavadocPackage [
 	self
-		assert: ((interpreter
+		assert: (interpreter
 			runOn: Javadoc 
 			method: #runOnPackage: 
-			andArguments: { SmallInteger package })
-				beginsWith: 'Package : Kernel')
+			andArguments: { PreciseProfilerTest package })
+		equals: (Javadoc runOnPackage: PreciseProfilerTest package)
 ]
 
 { #category : #test }
-PreciseInterpreterTest >> testInterpreteObjectNew [
+PreciseProfilerTest >> testInterpreteObjectNew [
 	self
 		assert: (interpreter runOn: Object method: #new) class
 		equals: Object.
 ]
 
 { #category : #test }
-PreciseInterpreterTest >> testInterpreteSmallIntegerAddition [
+PreciseProfilerTest >> testInterpreteSmallIntegerAddition [
 	self
 		assert: (interpreter runOn: 3 method: #+ andArguments: #(5) )
 		equals: 8.
@@ -99,4 +106,13 @@ PreciseInterpreterTest >> testInterpreteSmallIntegerAddition [
 		assert: (interpreter methodList) 
 		= (Dictionary newFrom: { 
 			SmallInteger>>#+ -> 1})
+]
+
+{ #category : #test }
+PreciseProfilerTest >> testInterpreteTimeNow [
+	self
+		assert: (interpreter
+			runOn: Time 
+			method: #now )
+		<= Time now
 ]

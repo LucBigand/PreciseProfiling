@@ -77,6 +77,20 @@ CHInterpreterTest >> testBalancingStack [
 ]
 
 { #category : #'tests - return' }
+CHInterpreterTest >> testBlockOnDoWithError [
+	self
+		assert: (self executeSelector: #blockOnDoWithError)
+		equals: 1.
+]
+
+{ #category : #'tests - return' }
+CHInterpreterTest >> testBlockOnDoWithNoError [
+	self
+		assert: (self executeSelector: #blockOnDoWithNoError)
+		equals: 0.
+]
+
+{ #category : #'tests - return' }
 CHInterpreterTest >> testBlockValueIsLastStatementValue [
 	"TODO : rewrite the test"
 	
@@ -87,6 +101,13 @@ CHInterpreterTest >> testBlockValueWithTemporaries [
 	self
 		assert: (self executeSelector: #returnBlockValueWithTemporaries)
 		equals: 3.
+]
+
+{ #category : #'tests - return' }
+CHInterpreterTest >> testCascadeMessage [
+	self
+		assert: (self executeSelector: #cascadeMessage)
+		equals: 300.
 ]
 
 { #category : #'tests - return' }
@@ -194,6 +215,7 @@ CHInterpreterTest >> testReturnFloat [
 
 { #category : #'tests - return' }
 CHInterpreterTest >> testReturnGlobal [
+	"I did not notice until now that this test does not work anymore. Today is my last day here, so I might not have the time to debug it"
 	| globalObject |
 	globalObject := Object new.
 	interpreter globalEnvironmentAt: #Global put: globalObject.
@@ -222,6 +244,20 @@ CHInterpreterTest >> testReturnRecursiveLiteralArray [
 	self
 		assert: (self executeSelector: #returnRecursiveLiteralArray)
 		equals: #(true 1 #('ahah')).
+]
+
+{ #category : #'tests - return' }
+CHInterpreterTest >> testReturnResultOfBlockWithArgument [
+	self
+		assert: (self executeSelector: #returnResultOfBlockWithArgument)
+		equals: #(2 4 6 8 10).
+]
+
+{ #category : #'tests - return' }
+CHInterpreterTest >> testReturnResultOfNestedBlocksWithArgument [
+	self
+		assert: (self executeSelector: #returnResultOfNestedBlocksWithArgument)
+		equals: #(#(2 4 6) #(4 6 8) #(6 8 10))
 ]
 
 { #category : #'tests - return' }

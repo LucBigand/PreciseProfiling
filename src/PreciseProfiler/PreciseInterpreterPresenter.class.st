@@ -16,7 +16,7 @@ Class {
 		'codePresenter',
 		'code'
 	],
-	#category : #PreciseProfiler
+	#category : #'PreciseProfiler-Core'
 }
 
 { #category : #specs }
@@ -124,7 +124,14 @@ PreciseInterpreterPresenter >> initializeWindow: aWindowPresenter [
 	
 	aWindowPresenter
 		title: 'Precise Profiler Display';
-		initialExtent: 750@500
+		initialExtent: 750@500;
+		toolbar: (self newToolbar
+			addItem: (self newToolbarButton
+				label: 'Graphical display';
+				icon: (self application iconNamed: #smallAdd);
+				action: [ PreciseMemoryPresenter openOn: interpreter ];
+				yourself );
+			yourself).
 ]
 
 { #category : #setting }

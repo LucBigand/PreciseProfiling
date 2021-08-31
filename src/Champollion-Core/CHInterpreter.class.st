@@ -1,3 +1,13 @@
+"
+Abstract syntax tree interpreter
+ 
+Public API and Key Messages
+	execute:withReceiver:andArguments: 
+
+    Instance Variables
+	primitives:		Dictionary that associate a pragma id (integer or string of characters) to the selector of a CHInterpreter method that simulates the behaviour of the primitive method associated to this pragma in Pharo
+	stack:		Stacks of CHMethodScope. The top method scope corresponds to the last executed method in the simulation of the program's execution, the second top method scope corresponds to the method that called the last one, etc...
+"
 Class {
 	#name : #CHInterpreter,
 	#superclass : #Object,
@@ -50,12 +60,29 @@ CHInterpreter >> auxVisitMessageNode: aNode [
 		               ifTrue: [ self currentMethod methodClass superclass ]
 		               ifFalse: [ newReceiver class ].
 	method := self lookup: aNode selector fromClass: lookupClass.
-	^ Dictionary newFrom: { 'method' -> method . 'receiver' -> newReceiver . 'args' -> args }
+	^ Dictionary newFrom: { #method -> method . #receiver -> newReceiver . #args -> args }
+]
+
+{ #category : #utility }
+CHInterpreter >> class: aSubclass isDescendentOf: aClass [
+	| currentClass |
+	aSubclass isClass ifFalse: [ ^ false ].
+	currentClass := aSubclass.
+	[ currentClass isNotNil ] whileTrue: [ 
+		currentClass  == aClass ifTrue: [ ^ true ].
+		currentClass := currentClass superclass ].
+	^ false
 ]
 
 { #category : #accessing }
 CHInterpreter >> currentMethod [
-	^ self tempAt: #___method.
+	| method |
+	method := self tempAt: #___method.
+	(method methodClass == FullBlockClosure)
+		ifTrue: [ ^ self homeFrame read: #___method ]
+		ifFalse: [ ^ method ]
+	"^ self homeFrame read: #___method."	
+	"^ self tempAt: #___method."
 ]
 
 { #category : #accessing }
@@ -80,6 +107,7 @@ CHInterpreter >> execute: anAst withReceiver: anObject [
 
 { #category : #visiting }
 CHInterpreter >> execute: anAst withReceiver: anObject andArguments: aCollection [
+	"Simulates the execution of anAst if its corresponding method was called by aReceiver with aCollection as its arguments"
 	| result thisFrame stackSize |
 	thisFrame := self pushNewFrame.
 	self tempAt: #___method put: anAst.
@@ -122,6 +150,8 @@ CHInterpreter >> globalEnvironmentAt: aSymbol put: anObject [
 
 { #category : #accessing }
 CHInterpreter >> homeFrame [
+	"Return the CHMethodScope which corresponds to the most outter lexical scope ot he currently
+	simulated method context"
 	| currentLookupFrame |
 	currentLookupFrame := self topFrame.
 	[ currentLookupFrame includesKey: #__definingContext ]
@@ -140,52 +170,63 @@ CHInterpreter >> initialize [
 
 { #category : #initialization }
 CHInterpreter >> initializePrimitiveTable [
-	primitives at: 1	put: #primitiveSmallIntegerAdd.
-	primitives at: 2	put: #primitiveSmallIntegerMinus.
-	primitives at: 3	put: #primitiveSmallIntegerLessThan.
-	primitives at: 4	put: #primitiveSmallIntegerGreaterThan.
-	primitives at: 5	put: #primitiveSmallIntegerLessOrEqualsThan.
-	primitives at: 6	put: #primitiveSmallIntegerGreaterOrEqualsThan.
-	primitives at: 7	put: #primitiveSmallIntegerEqualsThan.
-	primitives at: 8	put: #primitiveSmallIntegerNotEqualsThan.
-	primitives at: 9	put: #primitiveSmallIntegerMultiply.
-	primitives at: 10	put: #primitiveSmallIntegerDivide.
-	primitives at: 11	put: #primitiveSmallIntegerModulo.
-	primitives at: 12	put: #primitiveSmallIntegerEuclidianDivide.
-	primitives at: 14	put: #primitiveSmallIntegerBitAnd.
-	primitives at: 17	put: #primitiveSmallIntegerBitShift.
-	primitives at: 29	put: #primitiveSmallIntegerMultiply.
-	primitives at: 40	put: #primitiveAsFloat.
-	primitives at: 60	put: #primitiveAt.
-	primitives at: 61	put: #primitiveAtPut.
-	primitives at: 62	put: #primitiveSize.
-	primitives at: 63	put: #primitiveAt.
-	primitives at: 64	put: #primitiveAtPut.
-	primitives at: 70	put: #primitiveBasicNew.
-	primitives at: 71	put: #primitiveBasicNewVariable.
-	primitives at: 75	put: #primitiveBasicIdentityHash.
-	primitives at: 83	put: #primitivePerformWith.
-	primitives at: 105	put: #primitiveReplaceFromToWithStartingAt.
-	primitives at: 110	put: #primitiveIdentical.
-	primitives at: 111	put: #primitiveClass.
-	primitives at: 163	put: #primitiveIsReadOnlyObject.
-	primitives at: 169	put: #primitiveDifferent.
-	primitives at: 170	put: #primitiveValue.
-	primitives at: 171	put: #primitiveAsInteger.
-	primitives at: 175	put: #primitiveBasicIdentityHash.
-	primitives at: 201	put: #primitiveBlockValue.
-	primitives at: 202	put: #primitiveBlockValueWithArg.
-	primitives at: 207	put: #primitiveBlockValue.
-	primitives at: 541	put: #primitiveFloatAdd.
-	primitives at: 542	put: #primitiveFloatMinus.
-	primitives at: 547	put: #primitiveFloatEqualsThan.
-	primitives at: 549	put: #primitiveFloatMultiply.
-	primitives at: 550	put: #primitiveFloatDivide.
-	primitives at: 554	put: #primitiveTimesTwoPower.
-	primitives at: 'primDigitBitShiftMagnitude' put: #primitiveDigitBitShiftMagnitude.
-	primitives at: 'primDigitMultiplyNegative' put: #primitiveDigitMultiplyNegative.
-	primitives at: 'primitiveCompareString' put: #primitiveCompareString .
-	primitives at: 'primitiveStringHash' put: #primitiveStringHash
+	primitives 
+		at: 1	put: #primitiveSmallIntegerAdd;
+		at: 2	put: #primitiveSmallIntegerMinus;
+		at: 3	put: #primitiveSmallIntegerLessThan;
+		at: 4	put: #primitiveSmallIntegerGreaterThan;
+		at: 5	put: #primitiveSmallIntegerLessOrEqualsThan;
+		at: 6	put: #primitiveSmallIntegerGreaterOrEqualsThan;
+		at: 7	put: #primitiveSmallIntegerEqualsThan;
+		at: 8	put: #primitiveSmallIntegerNotEqualsThan;
+		at: 9	put: #primitiveSmallIntegerMultiply;
+		at: 10	put: #primitiveSmallIntegerDivide;
+		at: 11	put: #primitiveSmallIntegerModulo;
+		at: 12	put: #primitiveSmallIntegerEuclidianDivide;
+		at: 13	put: #primitiveSmallIntegerQuo;
+		at: 14	put: #primitiveSmallIntegerBitAnd;
+		at: 17	put: #primitiveSmallIntegerBitShift;
+		at: 18	put: #primitiveSmallIntegerPoint;
+		at: 29	put: #primitiveSmallIntegerMultiply;
+		at: 40	put: #primitiveAsFloat;
+		at: 60	put: #primitiveAt;
+		at: 61	put: #primitiveAtPut;
+		at: 62	put: #primitiveSize;
+		at: 63	put: #primitiveAt;
+		at: 64	put: #primitiveAtPut;
+		at: 70	put: #primitiveBasicNew;
+		at: 71	put: #primitiveBasicNewVariable;
+		at: 75	put: #primitiveBasicIdentityHash;
+		at: 83	put: #primitivePerformWith;
+		at: 84	put: #primitivePerformWithArguments;
+		at: 105	put: #primitiveReplaceFromToWithStartingAt;
+		at: 110	put: #primitiveIdentical;
+		at: 111	put: #primitiveClass;
+		at: 148	put: #primitiveShallowCopy;
+		at: 159	put: #primitiveHashMultiply;
+		at: 163	put: #primitiveIsReadOnlyObject;
+		at: 169	put: #primitiveDifferent;
+		at: 170	put: #primitiveValue;
+		at: 171	put: #primitiveAsInteger;
+		at: 175	put: #primitiveBasicIdentityHash;
+		at: 199	put: #primitiveBlockOnDo;
+		at: 201	put: #primitiveBlockValue;
+		at: 202	put: #primitiveBlockValueWithArg;
+		at: 207	put: #primitiveBlockValue;
+		at: 240	put: #primitiveUTCMicrosecondsClock;
+		at: 541	put: #primitiveFloatAdd;
+		at: 542	put: #primitiveFloatMinus;
+		at: 547	put: #primitiveFloatEqualsThan;
+		at: 549	put: #primitiveFloatMultiply;
+		at: 550	put: #primitiveFloatDivide;
+		at: 554	put: #primitiveTimesTwoPower;
+		at: 'primDigitBitShiftMagnitude' put: #primitiveDigitBitShiftMagnitude;
+		at: 'primDigitMultiplyNegative' put: #primitiveDigitMultiplyNegative;
+		at: 'primitiveCompareString' put: #primitiveCompareString ;
+		at: 'primitiveFindSubstring' put: #primitiveFindSubstring;
+		at: 'primitiveIndexOfAsciiInString' put: #primitiveIndexOfAsciiInString ;
+		at: 'primitiveStringHash' put: #primitiveStringHash;
+		at: 'primitiveTimezoneOffset' put: #primitiveTimezoneOffset
 ]
 
 { #category : #accessing }
@@ -238,9 +279,10 @@ CHInterpreter >> primitiveAt [
 		ifFalse: [ CHPrimitiveFail signal ].
 	((self argumentAt: 1) isKindOf: SmallInteger)
 		ifFalse: [ CHPrimitiveFail signal ].
-	self receiver size < (self argumentAt: 1)
+	self receiver basicSize < (self argumentAt: 1)
 		ifTrue: [ CHPrimitiveFail signal ].
-	^ self receiver at: (self argumentAt: 1).
+	[ ^ self receiver at: (self argumentAt: 1) ]
+		on: Exception do: [ ^ self receiver basicAt: (self argumentAt: 1) ].
 ]
 
 { #category : #primitives }
@@ -251,7 +293,7 @@ CHInterpreter >> primitiveAtPut [
 		ifFalse: [ CHPrimitiveFail signal ].
 	((self argumentAt: 1) isKindOf: SmallInteger)
 		ifFalse: [ CHPrimitiveFail signal ].
-	self receiver size <= (self argumentAt: 1)
+	self receiver basicSize < (self argumentAt: 1)
 		ifTrue: [ CHPrimitiveFail signal ].
 	^ self receiver at: (self argumentAt: 1) put: (self argumentAt: 2).
 ]
@@ -280,6 +322,21 @@ CHInterpreter >> primitiveBasicNewVariable [
 ]
 
 { #category : #primitives }
+CHInterpreter >> primitiveBlockOnDo [
+	"Work in progress"
+	| exception alternativeBlock currentFrame |
+	exception := (self argumentAt: 1).
+	alternativeBlock := (self argumentAt: 2).
+	currentFrame := self topFrame.
+	[ ^ self primitiveBlockValue ]
+		on: exception
+		do: [ 
+			[ self topFrame == currentFrame ] whileFalse: [ self popFrame ].
+			self receiver: alternativeBlock.
+			^ self primitiveBlockValue ]
+]
+
+{ #category : #primitives }
 CHInterpreter >> primitiveBlockValue [
 	| sequenceNode theBlock |
 	theBlock := self receiver.
@@ -292,7 +349,14 @@ CHInterpreter >> primitiveBlockValue [
 
 { #category : #primitives }
 CHInterpreter >> primitiveBlockValueWithArg [
-	self halt.
+	| sequenceNode theBlock |
+	theBlock := self receiver.
+	sequenceNode := theBlock code body.
+	self receiver: (theBlock definingContext read: #self).
+	self tempAt: #__definingContext put: theBlock definingContext. 
+	sequenceNode temporaryNames do: [ :e | self tempAt: e put: nil ].
+	self tempAt: (theBlock code arguments at: 1) name put: (self argumentAt: 1).
+	^ self visitNode: sequenceNode.
 ]
 
 { #category : #primitives }
@@ -334,6 +398,17 @@ CHInterpreter >> primitiveDigitMultiplyNegative [
 ]
 
 { #category : #primitives }
+CHInterpreter >> primitiveFindSubstring [
+	self numberOfArguments < 4
+		ifTrue: [ CHPrimitiveFail signal ].
+	self receiver
+		findSubstringViaPrimitive: (self argumentAt: 1)
+		in: (self argumentAt: 2) 
+		startingAt: (self argumentAt: 3)
+		matchTable: (self argumentAt: 4)
+]
+
+{ #category : #primitives }
 CHInterpreter >> primitiveFloatAdd [
 	self assertFloatArgument.
 	^ (self receiver) + (self argumentAt: 1).
@@ -364,10 +439,25 @@ CHInterpreter >> primitiveFloatMultiply [
 ]
 
 { #category : #primitives }
+CHInterpreter >> primitiveHashMultiply [
+	^ self receiver hashMultiply
+]
+
+{ #category : #primitives }
 CHInterpreter >> primitiveIdentical [ 
 	self numberOfArguments < 1
 		ifTrue: [ CHPrimitiveFail signal ].
 	^ (self receiver) == (self argumentAt: 1)
+]
+
+{ #category : #primitives }
+CHInterpreter >> primitiveIndexOfAsciiInString [
+	self numberOfArguments < 3
+		ifTrue: [ CHPrimitiveFail signal ].
+	^ self receiver
+		indexOfAscii: (self argumentAt: 1) 
+		inString: (self argumentAt: 2) 
+		startingAt: (self argumentAt: 3)
 ]
 
 { #category : #primitives }
@@ -379,9 +469,20 @@ CHInterpreter >> primitiveIsReadOnlyObject [
 CHInterpreter >> primitivePerformWith [
 	self numberOfArguments < 2
 		ifTrue: [ CHPrimitiveFail signal ].
-	^ self receiver
-		perform: (self argumentAt: 1)
-		with: (self argumentAt: 2).
+	^ self 
+		execute: (self lookup: (self argumentAt: 1) fromClass: self receiver class ) ast
+		withReceiver: self receiver
+		andArguments: { self argumentAt: 2 }
+]
+
+{ #category : #primitives }
+CHInterpreter >> primitivePerformWithArguments [
+	self numberOfArguments < 2
+		ifTrue: [ CHPrimitiveFail signal ].
+	^ self 
+		execute: (self lookup: (self argumentAt: 1) fromClass: self receiver class ) ast
+		withReceiver: self receiver
+		andArguments: ( self argumentAt: 2 )
 ]
 
 { #category : #primitives }
@@ -391,6 +492,11 @@ CHInterpreter >> primitiveReplaceFromToWithStartingAt [
 		to: (self argumentAt: 2)
 		with: (self argumentAt: 3)
 		startingAt: (self argumentAt: 4)
+]
+
+{ #category : #primitives }
+CHInterpreter >> primitiveShallowCopy [
+	^ self receiver shallowCopy
 ]
 
 { #category : #primitives }
@@ -493,6 +599,18 @@ CHInterpreter >> primitiveSmallIntegerNotEqualsThan [
 ]
 
 { #category : #primitives }
+CHInterpreter >> primitiveSmallIntegerPoint [
+	self assertSmallIntegerReceiverAndArgument.
+	^ (self receiver) @ (self argumentAt: 1).
+]
+
+{ #category : #primitives }
+CHInterpreter >> primitiveSmallIntegerQuo [
+	self assertSmallIntegerReceiverAndArgument.
+	^ (self receiver) quo: (self argumentAt: 1).
+]
+
+{ #category : #primitives }
 CHInterpreter >> primitiveStringAt [
 	self numberOfArguments < 1
 		ifTrue: [ CHPrimitiveFail signal ].
@@ -520,6 +638,16 @@ CHInterpreter >> primitiveTimesTwoPower [
 ]
 
 { #category : #primitives }
+CHInterpreter >> primitiveTimezoneOffset [
+	^ self receiver primOffset
+]
+
+{ #category : #primitives }
+CHInterpreter >> primitiveUTCMicrosecondsClock [
+	^ self receiver primUTCMicrosecondsClock
+]
+
+{ #category : #primitives }
 CHInterpreter >> primitiveValue [
 	^ self receiver value: (self argumentAt: 1)
 ]
@@ -544,6 +672,7 @@ CHInterpreter >> receiver: aValue [
 
 { #category : #accessing }
 CHInterpreter >> scopeDefining: aName [
+	"Returns the scope that defines the argument or variable whose name is aName"
 	^ [ self currentScope scopeDefining: aName ]
 		on: Exception
 		do: [ :exc |
@@ -552,22 +681,25 @@ CHInterpreter >> scopeDefining: aName [
 
 { #category : #accessing }
 CHInterpreter >> tempAt: aKey [
+	"Access the variable or argument names aKey in the current method context"
 	^ self topFrame read: aKey.
 ]
 
 { #category : #visiting }
 CHInterpreter >> tempAt: aSymbol put: anObject [
+	"Modify the value of the variable aSymbol in the current method context with anObject"
 	self topFrame write: aSymbol withValue: anObject.
 ]
 
 { #category : #accessing }
 CHInterpreter >> topFrame [
+	"Returns the current method context in the simulation of the profiled program's execution"
 	^ stack top
 ]
 
 { #category : #visiting }
 CHInterpreter >> visitArgumentVariableNode: aNode [
-	^ self topFrame read: aNode name. 
+	^ self visitTempOrArgVariableNode: aNode
 ]
 
 { #category : #visiting }
@@ -584,7 +716,8 @@ CHInterpreter >> visitAssignmentNode: aNode [
 		ifTrue: [ | definingFrame |
 			definingFrame := self lookupFrameDefiningTemporary: aNode variable name.
 			definingFrame write: aNode variable name withValue: value ]
-		ifFalse: [ aNode variable variable write: value to: self receiver ].
+		ifFalse: [ [ aNode variable variable write: value to: self receiver ]
+			on: Exception do: [ self tempAt: aNode variable name put: value ] ].
 	^ value.
 ]
 
@@ -597,13 +730,33 @@ CHInterpreter >> visitBlockNode: aNode [
 ]
 
 { #category : #visiting }
+CHInterpreter >> visitCascadeMessage: aMessageNode withReceiver: anObject [
+	| ast args |
+	ast := (self lookup: aMessageNode selector fromClass: anObject class) ast.
+	args := aMessageNode arguments collect: [ :argNode | self visitNode: argNode ].
+	^ self execute: ast withReceiver: anObject andArguments: args.
+]
+
+{ #category : #visiting }
+CHInterpreter >> visitCascadeNode: aNode [
+	| receiver |
+	receiver := self visitNode: (aNode messages at: 1).
+	aNode messages allButLast do: [ :each |
+		self visitCascadeMessage: each withReceiver: receiver ].
+	^ self visitCascadeMessage: aNode messages last withReceiver: receiver
+]
+
+{ #category : #visiting }
 CHInterpreter >> visitClassVariableNode: aNode [
 	| lookupClass |
 	lookupClass := self receiver isClass
 		ifTrue: [ self receiver ] 
 		ifFalse: [ self receiver class ].
-	[ lookupClass classPool includesKey: aNode name ] whileFalse: 
-		[ lookupClass := lookupClass superclass ].
+	[ lookupClass classPool includesKey: aNode name ] whileFalse: [ 
+		lookupClass sharedPools 
+			detect: [ :each | each includesKey: aNode name ]
+			ifFound: [ :class | ^ class classPool at: aNode name ].
+		lookupClass := lookupClass superclass ].
 	^ lookupClass classPool at: aNode name
 ]
 
@@ -636,9 +789,9 @@ CHInterpreter >> visitMessageNode: aNode [
 	| dict |
 	dict := self auxVisitMessageNode: aNode.
 	^ self 
-		execute: ((dict at: 'method') ast)
-		withReceiver: (dict at: 'receiver')
-		andArguments: (dict at: 'args').
+		execute: ((dict at: #method) ast)
+		withReceiver: (dict at: #receiver)
+		andArguments: (dict at: #args).
 ]
 
 { #category : #visiting }
@@ -646,6 +799,7 @@ CHInterpreter >> visitMethodNode: aNode [
 	[ aNode isPrimitive ifTrue: [ 
 		^ self executePrimitiveMethod: aNode ]]
 		on: CHPrimitiveFail do: [ :err | ].
+	"aNode isPrimitive ifTrue: [ self halt ]."
 	^ self visitNode: aNode body.
 ]
 
@@ -670,15 +824,15 @@ CHInterpreter >> visitSelfNode: aNode [
 { #category : #visiting }
 CHInterpreter >> visitSequenceNode: aNode [
 	| res |
-	(aNode statements size = 0)
+	(aNode statements isEmpty)
 		ifTrue: [ ^ self homeFrame receiver ].
 	aNode temporaryNames
 		do: [ :each | self tempAt: each put: nil ].
 	aNode statements allButLast
 		do: [ :each | self visitNode: each ].
 	res := self visitNode: aNode statements last.
-	(aNode statements last isAssignment and: aNode parent isMethod )
-		ifTrue: [ ^ self receiver ]
+	(aNode statements last isReturn not and: aNode parent isMethod)
+		ifTrue: [ ^ self receiver  ]
 		ifFalse: [ ^ res ]
 ]
 
@@ -688,8 +842,18 @@ CHInterpreter >> visitSuperNode: aNode [
 ]
 
 { #category : #visiting }
-CHInterpreter >> visitTemporaryVariableNode: aNode [
+CHInterpreter >> visitTempOrArgVariableNode: aNode [
 	| definingFrame |
 	definingFrame := self lookupFrameDefiningTemporary: aNode name.
 	^ definingFrame read: aNode name.
+]
+
+{ #category : #visiting }
+CHInterpreter >> visitTemporaryVariableNode: aNode [
+	^ self visitTempOrArgVariableNode: aNode
+]
+
+{ #category : #visiting }
+CHInterpreter >> visitThisContextNode: aNode [
+	^ thisContext
 ]

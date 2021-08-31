@@ -16,7 +16,7 @@ Class {
 		'updated',
 		'allocationDict'
 	],
-	#category : #PreciseProfiler
+	#category : #'PreciseProfiler-Memory'
 }
 
 { #category : #adding }
@@ -29,7 +29,7 @@ PreciseMemoryNode >> addAllocation: anObject [
 
 { #category : #accessing }
 PreciseMemoryNode >> allocationDict [
-	^ allocationDict get
+	^ allocationDict
 ]
 
 { #category : #printing }
