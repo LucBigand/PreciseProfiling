@@ -1,3 +1,10 @@
+"
+I am a class that simulates the behaviour of a block for CHInterpreter (AST interpretation)
+
+    Instance Variables
+	code:		The code within this block
+	definingContext:		CHMethodScope that represents the context in which this block is called
+"
 Class {
 	#name : #CHBlock,
 	#superclass : #Object,

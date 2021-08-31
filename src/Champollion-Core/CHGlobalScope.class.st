@@ -1,3 +1,9 @@
+"
+I represent the internal representation of the Pharo environment and its global variables within a CHInterpreter within a CHInterpreter. 
+
+    Instance Variables
+	globalsDictionary:		A dictionary that associates the names of global variables in the simulation of the program's execution with their values
+"
 Class {
 	#name : #CHGlobalScope,
 	#superclass : #Object,

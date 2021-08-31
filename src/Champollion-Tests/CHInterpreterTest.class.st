@@ -215,6 +215,7 @@ CHInterpreterTest >> testReturnFloat [
 
 { #category : #'tests - return' }
 CHInterpreterTest >> testReturnGlobal [
+	"I did not notice until now that this test does not work anymore. Today is my last day here, so I might not have the time to debug it"
 	| globalObject |
 	globalObject := Object new.
 	interpreter globalEnvironmentAt: #Global put: globalObject.

@@ -1,3 +1,15 @@
+"
+Implementation of a stack in Pharo
+
+Public API and Key Messages
+
+- push  
+- pop
+- top
+
+    Instance Variables
+	elements:		The elements of the stack
+"
 Class {
 	#name : #CTStack,
 	#superclass : #Object,

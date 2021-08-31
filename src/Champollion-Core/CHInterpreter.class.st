@@ -1,3 +1,13 @@
+"
+Abstract syntax tree interpreter
+ 
+Public API and Key Messages
+	execute:withReceiver:andArguments: 
+
+    Instance Variables
+	primitives:		Dictionary that associate a pragma id (integer or string of characters) to the selector of a CHInterpreter method that simulates the behaviour of the primitive method associated to this pragma in Pharo
+	stack:		Stacks of CHMethodScope. The top method scope corresponds to the last executed method in the simulation of the program's execution, the second top method scope corresponds to the method that called the last one, etc...
+"
 Class {
 	#name : #CHInterpreter,
 	#superclass : #Object,
@@ -97,6 +107,7 @@ CHInterpreter >> execute: anAst withReceiver: anObject [
 
 { #category : #visiting }
 CHInterpreter >> execute: anAst withReceiver: anObject andArguments: aCollection [
+	"Simulates the execution of anAst if its corresponding method was called by aReceiver with aCollection as its arguments"
 	| result thisFrame stackSize |
 	thisFrame := self pushNewFrame.
 	self tempAt: #___method put: anAst.
@@ -139,6 +150,8 @@ CHInterpreter >> globalEnvironmentAt: aSymbol put: anObject [
 
 { #category : #accessing }
 CHInterpreter >> homeFrame [
+	"Return the CHMethodScope which corresponds to the most outter lexical scope ot he currently
+	simulated method context"
 	| currentLookupFrame |
 	currentLookupFrame := self topFrame.
 	[ currentLookupFrame includesKey: #__definingContext ]
@@ -659,6 +672,7 @@ CHInterpreter >> receiver: aValue [
 
 { #category : #accessing }
 CHInterpreter >> scopeDefining: aName [
+	"Returns the scope that defines the argument or variable whose name is aName"
 	^ [ self currentScope scopeDefining: aName ]
 		on: Exception
 		do: [ :exc |
@@ -667,16 +681,19 @@ CHInterpreter >> scopeDefining: aName [
 
 { #category : #accessing }
 CHInterpreter >> tempAt: aKey [
+	"Access the variable or argument names aKey in the current method context"
 	^ self topFrame read: aKey.
 ]
 
 { #category : #visiting }
 CHInterpreter >> tempAt: aSymbol put: anObject [
+	"Modify the value of the variable aSymbol in the current method context with anObject"
 	self topFrame write: aSymbol withValue: anObject.
 ]
 
 { #category : #accessing }
 CHInterpreter >> topFrame [
+	"Returns the current method context in the simulation of the profiled program's execution"
 	^ stack top
 ]
 

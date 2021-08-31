@@ -1,3 +1,10 @@
+"
+I represent the internal representation of a receiver within a CHInterpreter. I am able to access and modify the instance variables of this interpreter 
+
+    Instance Variables
+	parentScope:		A CHGlobalScope
+	receiver:		The receiver of the method currently simulated in CHInterpreter
+"
 Class {
 	#name : #CHInstanceScope,
 	#superclass : #Object,
